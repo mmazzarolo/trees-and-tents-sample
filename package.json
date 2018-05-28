@@ -1,0 +1,35 @@
+{
+  "name": "trees-and-tents",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-plugin-react-app": "^3.0.0",
+    "flow-bin": "^0.73.0",
+    "jest-expo": "~27.0.0",
+    "prettier": "^1.12.1",
+    "react-native-scripts": "1.14.0",
+    "react-test-renderer": "16.3.1"
+  },
+  "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
+  "scripts": {
+    "start": "react-native-scripts start",
+    "eject": "react-native-scripts eject",
+    "android": "react-native-scripts android",
+    "ios": "react-native-scripts ios",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "dependencies": {
+    "expo": "^27.0.1",
+    "lodash": "^4.17.10",
+    "react": "16.3.1",
+    "react-native": "~0.55.2",
+    "react-native-animatable": "^1.2.4",
+    "react-native-platform-touchable": "^1.1.1",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6"
+  }
+}
