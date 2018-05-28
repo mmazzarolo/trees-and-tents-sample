@@ -1,6 +1,6 @@
 /* @flow */
 import * as React from "react";
-import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
 import chunk from "lodash/chunk";
 import random from "lodash/random";
@@ -11,11 +11,12 @@ import * as gameActions from "../actions/gameActions";
 import * as boardActions from "../actions/boardActions";
 import isPointInBoundingRect from "../utils/isPointInBoundingRect";
 import getPuzzle from "../utils/getPuzzle";
+import getTileSize from "../utils/getTileSize";
+import metrics from "../config/metrics";
 
 import type { ReduxState } from "../types/ReduxState";
 import type { BoardDigit } from "../types/BoardDigit";
 import type { BoardTile } from "../types/BoardTile";
-import type { PointerEvent } from "../types/PointerEvent";
 
 const SOLVED_ANIMATION_DURATION = 2000;
 
@@ -56,13 +57,6 @@ class Game extends React.Component<Props> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    // this.tilesBoundigClientRects = this.tilesRefs.map(tileRef => {
-    //   const tileDOMNode = ReactDom.findDOMNode(tileRef);
-    //   return tileDOMNode &&
-    //     typeof tileDOMNode.getBoundingClientRect === "function"
-    //     ? tileDOMNode.getBoundingClientRect()
-    //     : null;
-    // });
     const hasBeenSolved = !prevProps.isSolved && this.props.isSolved;
     if (hasBeenSolved) {
       setTimeout(() => {
@@ -147,6 +141,8 @@ class Game extends React.Component<Props> {
 
     const tilesRefsTemp = Array.from({ length: size });
 
+    const tileSize = getTileSize(size);
+
     // Map tiles to React elements (Tile)
     const boardCells = tilesByRows.map((row, rowIndex) => {
       return row.map((col, colIndex) => {
@@ -161,6 +157,8 @@ class Game extends React.Component<Props> {
               }
             }}
             id={tile.id}
+            width={tileSize}
+            height={tileSize}
             onPress={() => this.handleTilePointerUp(tile)}
             isValid={tile.isValid}
             status={tile.status}
@@ -175,6 +173,8 @@ class Game extends React.Component<Props> {
       row.push(
         <Digit
           key={`digit_x_${index}`}
+          height={tileSize}
+          width={metrics.DIGIT_SIZE}
           numberOfTents={digit.numberOfTents}
           isValid={digit.isValid}
           isFilled={digit.isFilled}
@@ -187,13 +187,21 @@ class Game extends React.Component<Props> {
       return (
         <Digit
           key={`digit_y_${index}`}
+          width={tileSize}
+          height={metrics.DIGIT_SIZE}
           numberOfTents={digit.numberOfTents}
           isValid={digit.isValid}
           isFilled={digit.isFilled}
         />
       );
     });
-    bottomDigits.push(<Digit key={`last-cell`} />);
+    bottomDigits.push(
+      <Digit
+        key={`last-cell`}
+        height={metrics.DIGIT_SIZE}
+        width={metrics.DIGIT_SIZE}
+      />
+    );
     boardCells.push(bottomDigits);
 
     // Render the board
@@ -203,13 +211,15 @@ class Game extends React.Component<Props> {
     }
     return (
       <View style={styles.container}>
-        {boardCells.map((row, rowIndex) => {
-          return (
-            <View style={styles.boardRow} key={`board-row-${rowIndex}`}>
-              {row}
-            </View>
-          );
-        })}
+        <View style={styles.board}>
+          {boardCells.map((row, rowIndex) => {
+            return (
+              <View style={styles.boardRow} key={`board-row-${rowIndex}`}>
+                {row}
+              </View>
+            );
+          })}
+        </View>
       </View>
     );
   }
@@ -218,6 +228,16 @@ class Game extends React.Component<Props> {
 export default connect(mapStateToProps, mapDispatchToProps)(Game);
 
 const styles = StyleSheet.create({
-  container: {},
-  boardRow: { flexDirection: "row" }
+  container: {
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  board: {
+    marginLeft: metrics.DIGIT_SIZE / 2,
+    marginTop: metrics.DIGIT_SIZE / 2
+  },
+  boardRow: {
+    flexDirection: "row"
+  }
 });
