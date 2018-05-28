@@ -33,6 +33,8 @@ type State = {
 };
 
 class Tile extends React.Component<Props, State> {
+  tileRef: any = null;
+
   state = {
     spawnAnimValue: new Animated.Value(0),
     backgroundAnimValue: new Animated.Value(0),

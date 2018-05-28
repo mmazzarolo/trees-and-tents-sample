@@ -1,6 +1,8 @@
 /* @flow */
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, PanResponder, findNodeHandle } from "react-native";
+// $FlowFixMe
+import NativeMethodsMixin from "NativeMethodsMixin";
 import { connect } from "react-redux";
 import chunk from "lodash/chunk";
 import random from "lodash/random";
@@ -12,15 +14,19 @@ import * as boardActions from "../actions/boardActions";
 import isPointInBoundingRect from "../utils/isPointInBoundingRect";
 import getPuzzle from "../utils/getPuzzle";
 import getTileSize from "../utils/getTileSize";
+import delay from "../utils/delay";
 import metrics from "../config/metrics";
 
 import type { ReduxState } from "../types/ReduxState";
+import type { ReactNativeViewRect } from "../types/ReactNativeViewRect";
+import type { GameStatus } from "../types/GameStatus";
 import type { BoardDigit } from "../types/BoardDigit";
 import type { BoardTile } from "../types/BoardTile";
 
 const SOLVED_ANIMATION_DURATION = 2000;
 
 type Props = {
+  status: GameStatus,
   tiles: BoardTile[],
   size: number,
   digitsX: BoardDigit[],
@@ -32,6 +38,7 @@ type Props = {
 };
 
 const mapStateToProps = (state: ReduxState) => ({
+  status: state.game.status,
   tiles: state.board.tiles,
   size: state.board.size,
   digitsX: state.board.digitsX,
@@ -49,14 +56,24 @@ class Game extends React.Component<Props> {
   isPointerDown: boolean = false;
   isInEmptyStreak: boolean = false;
   pointerDownTime: number = 0;
-  tilesRefs: (?Tile)[] = [];
-  tilesBoundigClientRects: (?ClientRect)[] = [];
+  // $FlowFixMe
+  tilesRefs: (?Tile)[] = Array.from({ length: this.props.size });
+  // $FlowFixMe
+  tilesBoundigClientRects: (?ReactNativeViewRect)[] = Array.from({
+    length: this.props.size
+  });
 
   componentDidMount() {
     this.props.startGame(getPuzzle("easy", "6x6", random(9)));
   }
 
   componentDidUpdate(prevProps: Props) {
+    const hasStartedPlaying =
+      prevProps.status !== this.props.status && this.props.status === "PLAYING";
+    if (hasStartedPlaying) {
+      this.buildTilesBoundigClientRects();
+    }
+
     const hasBeenSolved = !prevProps.isSolved && this.props.isSolved;
     if (hasBeenSolved) {
       setTimeout(() => {
@@ -65,42 +82,44 @@ class Game extends React.Component<Props> {
     }
   }
 
-  handleBoardPointerUp = (e: PointerEvent) => {
-    console.debug("handleBoardPointerUp", e);
-    this.isPointerDown = false;
+  buildTilesBoundigClientRects = async () => {
+    await delay(1);
+    this.tilesRefs.forEach((tileRef, index) => {
+      NativeMethodsMixin.measureInWindow.call(
+        findNodeHandle(tileRef),
+        (x, y, width, height) => {
+          const rect = { x, y, width, height };
+          this.tilesBoundigClientRects[index] = rect;
+        }
+      );
+    });
   };
 
-  handleBoardPointerMove = (e: MouseEvent) => {
+  boardPanResponder = PanResponder.create({
+    onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+      return gestureState.dx !== 0 && gestureState.dy !== 0;
+    },
+
+    onPanResponderMove: (evt, gestureState) => {
+      this.handleTouchMove(gestureState.moveX, gestureState.moveY);
+    }
+  });
+
+  handleTouchMove = (x: number, y: number) => {
+    const point = { x, y };
     this.tilesBoundigClientRects.some((boundingClientRect, index) => {
       if (!boundingClientRect) return false;
-      const point = { x: e.clientX, y: e.clientY };
       const isPointerInTile = isPointInBoundingRect(point, boundingClientRect);
       if (isPointerInTile) {
         const hoveredTileref = this.props.tiles[index];
-        this.handleTilePointerEnter(null, hoveredTileref);
+        this.handleTilePointerEnter(hoveredTileref);
         return true;
       }
       return false;
     });
   };
 
-  handleBoardContextMenu = (e: Event) => {
-    e.preventDefault();
-  };
-
-  handleTilePointerDown = (e: PointerEvent, tile: BoardTile) => {
-    console.debug("handleTilePointerDown", tile.id);
-    this.isPointerDown = true;
-    this.pointerDownTime = Date.now();
-  };
-
   handleTilePointerUp = (tile: BoardTile) => {
-    console.debug("handleTilePointerUp", tile.id);
-    this.isPointerDown = false;
-    if (this.isInEmptyStreak) {
-      this.isInEmptyStreak = false;
-      return;
-    }
     if (tile.status === "TREE") {
       return;
     }
@@ -115,31 +134,16 @@ class Game extends React.Component<Props> {
     }
   };
 
-  handleTilePointerEnter = (e: ?PointerEvent, tile: BoardTile) => {
-    console.debug("handleTilePointerEnter", tile.id);
-    if (this.isPointerDown) {
-      this.isInEmptyStreak = true;
-      if (tile.status === "PRISTINE" || tile.status === "UNSIGNED") {
-        this.props.updateTileStatus(tile.id, "SIGNED_AS_EMPTY");
-      }
-    }
-  };
-
-  handleTilePointerLeave = (e: ?PointerEvent, tile: BoardTile) => {
-    console.debug("handleTilePointerLeave", tile.id);
-    if (this.isPointerDown) {
-      this.isInEmptyStreak = true;
-      if (tile.status === "PRISTINE" || tile.status === "UNSIGNED") {
-        this.props.updateTileStatus(tile.id, "SIGNED_AS_EMPTY");
-      }
+  handleTilePointerEnter = (tile: BoardTile) => {
+    this.isInEmptyStreak = true;
+    if (tile.status === "PRISTINE" || tile.status === "UNSIGNED") {
+      this.props.updateTileStatus(tile.id, "SIGNED_AS_EMPTY");
     }
   };
 
   render() {
-    const { tiles, size, digitsX, digitsY, isSolved } = this.props;
+    const { tiles, size, digitsX, digitsY } = this.props;
     const tilesByRows = chunk(tiles, size);
-
-    const tilesRefsTemp = Array.from({ length: size });
 
     const tileSize = getTileSize(size);
 
@@ -152,8 +156,7 @@ class Game extends React.Component<Props> {
             key={`tile-${colIndex}-${colIndex}`}
             ref={ref => {
               if (ref) {
-                // $FlowFixMe
-                tilesRefsTemp[tile.id] = ref;
+                this.tilesRefs[tile.id] = ref;
               }
             }}
             id={tile.id}
@@ -204,13 +207,8 @@ class Game extends React.Component<Props> {
     );
     boardCells.push(bottomDigits);
 
-    // Render the board
-    let className = "Game";
-    if (isSolved) {
-      className = `${className} Game-solved`;
-    }
     return (
-      <View style={styles.container}>
+      <View style={styles.container} {...this.boardPanResponder.panHandlers}>
         <View style={styles.board}>
           {boardCells.map((row, rowIndex) => {
             return (
