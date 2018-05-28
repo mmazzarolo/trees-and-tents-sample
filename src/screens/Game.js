@@ -62,6 +62,8 @@ class Game extends React.Component<Props> {
   tilesBoundigClientRects: (?ReactNativeViewRect)[] = Array.from({
     length: this.props.size
   });
+  firstHoveredTile: ?BoardTile = null;
+  isHovering: boolean = false;
 
   componentDidMount() {
     this.props.startGame(getPuzzle("easy", "6x6", random(9)));
@@ -97,11 +99,15 @@ class Game extends React.Component<Props> {
 
   boardPanResponder = PanResponder.create({
     onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
-      return gestureState.dx !== 0 && gestureState.dy !== 0;
+      return true;
     },
 
     onPanResponderMove: (evt, gestureState) => {
       this.handleTouchMove(gestureState.moveX, gestureState.moveY);
+    },
+    onPanResponderRelease: (evg, gestureState) => {
+      this.firstHoveredTile = null;
+      this.isHovering = false;
     }
   });
 
@@ -111,8 +117,17 @@ class Game extends React.Component<Props> {
       if (!boundingClientRect) return false;
       const isPointerInTile = isPointInBoundingRect(point, boundingClientRect);
       if (isPointerInTile) {
-        const hoveredTileref = this.props.tiles[index];
-        this.handleTilePointerEnter(hoveredTileref);
+        const hoveredTile = this.props.tiles[index];
+        if (!this.isHovering) {
+          this.isHovering = true;
+          this.firstHoveredTile = hoveredTile;
+        } else if (hoveredTile !== this.firstHoveredTile) {
+          if (this.firstHoveredTile) {
+            this.handleTilePointerEnter(this.firstHoveredTile);
+          }
+          this.firstHoveredTile = null;
+          this.handleTilePointerEnter(hoveredTile);
+        }
         return true;
       }
       return false;

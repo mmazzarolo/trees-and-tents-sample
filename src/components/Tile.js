@@ -4,6 +4,7 @@ import {
   Animated,
   StyleSheet,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   View
 } from "react-native";
 import colors from "../config/colors";
@@ -176,7 +177,7 @@ class Tile extends React.Component<Props, State> {
       backgroundTransform = [{ scale: backgroundAnimValue }];
     }
     return (
-      <TouchableWithoutFeedback onPressIn={onPress}>
+      <TouchableOpacity onPressIn={onPress}>
         <Animated.View
           style={[styles.container, { opacity: spawnAnimValue, width, height }]}
         >
@@ -195,7 +196,7 @@ class Tile extends React.Component<Props, State> {
             {tileContent ? tileContent : null}
           </View>
         </Animated.View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     );
   }
 }
