@@ -8,10 +8,15 @@ import {
   View
 } from "react-native";
 import colors from "../config/colors";
+import device from "../config/device";
 import tentImage from "../assets/images/tent.png";
 import treeImage from "../assets/images/tree.png";
 
 import type { BoardTileStatus } from "../types/BoardTileStatus";
+
+const Touchable = device.IS_ANDROID
+  ? TouchableWithoutFeedback
+  : TouchableOpacity;
 
 const SPAWN_ANIM_DURATION = 200;
 const SPAWN_ANIM_DELAY = 200;
@@ -102,7 +107,7 @@ class Tile extends React.Component<Props, State> {
       {
         scale: tentImageAnimValue.interpolate({
           inputRange: [0, 0.75, 1],
-          outputRange: [0, 1.2, 1],
+          outputRange: [0.01, 1.2, 1],
           extrapolate: "clamp"
         })
       }
@@ -111,7 +116,7 @@ class Tile extends React.Component<Props, State> {
       {
         scale: tentImageAnimValue.interpolate({
           inputRange: [0, 0.5, 1],
-          outputRange: [0, 0, 1],
+          outputRange: [0.01, 0, 1],
           extrapolate: "clamp"
         })
       }
@@ -177,7 +182,7 @@ class Tile extends React.Component<Props, State> {
       backgroundTransform = [{ scale: backgroundAnimValue }];
     }
     return (
-      <TouchableOpacity onPressIn={onPress}>
+      <Touchable onPressIn={onPress}>
         <Animated.View
           style={[styles.container, { opacity: spawnAnimValue, width, height }]}
         >
@@ -196,7 +201,7 @@ class Tile extends React.Component<Props, State> {
             {tileContent ? tileContent : null}
           </View>
         </Animated.View>
-      </TouchableOpacity>
+      </Touchable>
     );
   }
 }

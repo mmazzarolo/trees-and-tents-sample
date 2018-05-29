@@ -15,6 +15,7 @@ import isPointInBoundingRect from "../utils/isPointInBoundingRect";
 import getPuzzle from "../utils/getPuzzle";
 import getTileSize from "../utils/getTileSize";
 import delay from "../utils/delay";
+import device from "../config/device";
 import metrics from "../config/metrics";
 
 import type { ReduxState } from "../types/ReduxState";
@@ -63,6 +64,7 @@ class Game extends React.Component<Props> {
     length: this.props.size
   });
   firstHoveredTile: ?BoardTile = null;
+  lastHoveredTile: ?BoardTile = null;
   isHovering: boolean = false;
 
   componentDidMount() {
@@ -90,7 +92,7 @@ class Game extends React.Component<Props> {
       NativeMethodsMixin.measureInWindow.call(
         findNodeHandle(tileRef),
         (x, y, width, height) => {
-          const rect = { x, y, width, height };
+          const rect = { x, y: device.IS_ANDROID ? y + 24 : y, width, height };
           this.tilesBoundigClientRects[index] = rect;
         }
       );
@@ -107,17 +109,31 @@ class Game extends React.Component<Props> {
     },
     onPanResponderRelease: (evg, gestureState) => {
       this.firstHoveredTile = null;
+      this.lastHoveredTile = null;
       this.isHovering = false;
     }
   });
 
   handleTouchMove = (x: number, y: number) => {
     const point = { x, y };
+    if (this.lastHoveredTile) {
+      const lastHoveredTileRect = this.tilesBoundigClientRects[
+        this.lastHoveredTile.id
+      ];
+      const isStillInSameTile = isPointInBoundingRect(
+        point,
+        lastHoveredTileRect
+      );
+      if (isStillInSameTile) {
+        return;
+      }
+    }
     this.tilesBoundigClientRects.some((boundingClientRect, index) => {
       if (!boundingClientRect) return false;
       const isPointerInTile = isPointInBoundingRect(point, boundingClientRect);
       if (isPointerInTile) {
         const hoveredTile = this.props.tiles[index];
+        this.lastHoveredTile = hoveredTile;
         if (!this.isHovering) {
           this.isHovering = true;
           this.firstHoveredTile = hoveredTile;
