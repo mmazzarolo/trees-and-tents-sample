@@ -30,14 +30,12 @@ export default class extends React.PureComponent<Props> {
 }
 
 const styles = StyleSheet.create({
-  container: {},
-  button: {
-    borderRadius: 2,
-    // alignSelf: "stretch",
-    justifyContent: "center",
-    borderColor: "rgba(0, 0, 0, 0.1)",
-    padding: 26
+  container: {
+    width: "100%",
+    borderRadius: 4,
+    overflow: "hidden"
   },
+  gradient: {},
   text: {
     fontWeight: "bold",
     fontSize: 26,
