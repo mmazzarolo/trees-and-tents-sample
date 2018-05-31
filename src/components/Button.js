@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
   gradient: {},
   text: {
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontSize: 26,
     textAlign: "center",
     color: "white"

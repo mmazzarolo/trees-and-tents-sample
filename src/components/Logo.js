@@ -50,12 +50,13 @@ class Logo extends React.PureComponent<{}> {
 
 const styles = StyleSheet.create({
   container: {
-    height: "70%",
+    height: "100%",
     width: "70%",
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    overflow: "hidden"
+    overflow: "hidden",
+    zIndex: 2
   },
   backgroundImage: {
     height: "120%",
@@ -65,7 +66,8 @@ const styles = StyleSheet.create({
   titleImage: {
     position: "absolute",
     height: "100%",
-    width: "100%"
+    width: "100%",
+    zIndex: 2
   }
 });
 
