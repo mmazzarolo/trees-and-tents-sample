@@ -87,12 +87,12 @@ class Game extends React.Component<Props> {
   }
 
   buildTilesBoundigClientRects = async () => {
-    await delay(1);
+    await delay(10);
     this.tilesRefs.forEach((tileRef, index) => {
-      NativeMethodsMixin.measureInWindow.call(
+      NativeMethodsMixin.measure.call(
         findNodeHandle(tileRef),
         (x, y, width, height) => {
-          const rect = { x, y: device.IS_ANDROID ? y + 24 : y, width, height };
+          const rect = { x, y: device.IS_ANDROID ? y - 24 : y, width, height };
           this.tilesBoundigClientRects[index] = rect;
         }
       );

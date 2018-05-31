@@ -1,12 +1,17 @@
 /* @flow */
 import * as React from "react";
+import { Animated, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
 import * as routerActions from "../actions/routerActions";
+import SuccessText from "../components/SuccessText";
 import Button from "../components/Button";
 import delay from "../utils/delay";
+import colors from "../config/colors";
+import metrics from "../config/metrics";
 
 import type { Route } from "../types/Route";
 
+const ENTER_ANIM_DURATION = 200;
 type Props = {
   goToScreen: typeof routerActions.goToScreen
 };
@@ -20,67 +25,51 @@ const mapDispatchToProps = {
 };
 
 class Success extends React.Component<Props, State> {
+  backgroundAnimValue: Animated.Value = new Animated.Value(0);
+
   state = {
     transitioningTo: null
   };
 
-  handleMenuClick = async () => {
-    this.setState({ transitioningTo: "MAIN" });
-    await delay(500);
-    this.props.goToScreen("MAIN");
-  };
-
-  handleNextClick = async () => {
-    // TODO: Wire up to next puzzle
-    this.setState({ transitioningTo: "MAIN" });
-    await delay(500);
-    this.props.goToScreen("MAIN");
-  };
+  componentDidMount() {
+    Animated.timing(this.backgroundAnimValue, {
+      toValue: 1,
+      duration: ENTER_ANIM_DURATION,
+      useNativeDriver: true
+    }).start();
+  }
 
   render() {
-    let containerClassName = "Success";
-    if (this.state.transitioningTo) {
-      containerClassName = `${containerClassName} Success-transitioning`;
-    }
+    const containerTransform = [
+      {
+        translateX: this.backgroundAnimValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [metrics.SCREEN_WIDTH, 0],
+          extrapolate: "clamp"
+        })
+      }
+    ];
     return (
-      <div className={containerClassName}>
-        <div className="Success-title">
-          <h1>
-            <span>6</span>
-            <span>x</span>
-            <span>6</span>
-            <span>-</span>
-            <span>0</span>
-            <span>1</span>
-          </h1>
-          <h1>
-            <span>C</span>
-            <span>O</span>
-            <span>M</span>
-            <span>P</span>
-            <span>L</span>
-            <span>E</span>
-            <span>T</span>
-            <span>E</span>
-          </h1>
-        </div>
-        <div className="Success-buttons">
-          <Button
-            label="Menu"
-            type="white"
-            size="small"
-            onClick={this.handleMenuClick}
-          />
-          <Button
-            label="Next"
-            type="white"
-            size="small"
-            onClick={this.handleNextClick}
-          />
-        </div>
-      </div>
+      <Animated.View
+        style={[styles.container, { transform: containerTransform }]}
+      >
+        <View style={styles.title}>
+          <SuccessText delay={ENTER_ANIM_DURATION} />
+        </View>
+      </Animated.View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    height: "100%",
+    width: "100%",
+    backgroundColor: colors.FRINGY_FLOWER_2,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  title: {}
+});
 
 export default connect(null, mapDispatchToProps)(Success);

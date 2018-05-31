@@ -5,7 +5,7 @@ import { View } from "react-native";
 import Game from "./Game";
 // import Splash from "./Splash";
 import Main from "./Main";
-// import Success from "./Success";
+import Success from "./Success";
 // import Stages from "./Stages";
 
 import type { Route } from "../types/Route";
@@ -31,7 +31,7 @@ class Router extends React.Component<Props> {
       case "STAGES":
         return <Main />;
       case "SUCCESS":
-        return <Main />;
+        return <Success />;
       default:
         return null;
     }

@@ -14,7 +14,7 @@ export type RouterState = {|
 //   INITIAL STATE
 // ===========================
 export const initialState: RouterState = {
-  currentRoute: "MAIN"
+  currentRoute: "SUCCESS"
 };
 
 // ===========================
