@@ -1,49 +1,96 @@
 /* @flow */
 import React from "react";
-import { StyleSheet } from "react-native";
+import {
+  LayoutAnimation,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View
+} from "react-native";
 import { LinearGradient } from "expo";
-import Touchable from "react-native-platform-touchable";
 import Text from "../components/Text";
+import getDifferentLuminance from "../utils/getDifferentLuminance";
 import colors from "../config/colors";
 
 import type { ReactNativeViewStyle } from "../types/ReactNativeViewStyle";
 import type { ReactNativeTextStyle } from "../types/ReactNativeTextStyle";
 
+const CUSTOM_LAYOUT_ANIMATION = {
+  duration: 40,
+  create: { type: LayoutAnimation.Types.linear },
+  update: { type: LayoutAnimation.Types.linear },
+  delete: { type: LayoutAnimation.Types.linear }
+};
+
 type Props = {
   onPress: any => mixed,
   label: string,
-  colors?: string[],
+  backgroundColors: string[],
   style?: ReactNativeViewStyle,
-  gradientStyle?: ReactNativeViewStyle,
   textStyle?: ReactNativeTextStyle
 };
 
-export default class extends React.PureComponent<Props> {
+type State = {
+  isTouched: boolean
+};
+
+export default class extends React.PureComponent<Props, State> {
   static defaultProps = {
-    colors: [colors.PUERTO_RICO, colors.DULL_CYAN]
+    backgroundColors: [colors.PUERTO_RICO, colors.DULL_CYAN]
+  };
+
+  state = {
+    isTouched: false
+  };
+
+  get darkerBackgroundColors() {
+    return this.props.backgroundColors.map(x => getDifferentLuminance(x, -0.2));
+  }
+
+  handlePressIn = () => {
+    LayoutAnimation.configureNext(CUSTOM_LAYOUT_ANIMATION);
+    this.setState({ isTouched: true });
+  };
+
+  handlePressOut = () => {
+    LayoutAnimation.configureNext(CUSTOM_LAYOUT_ANIMATION);
+    this.setState({ isTouched: false });
+    this.props.onPress();
   };
 
   render() {
-    const {
-      onPress,
-      label,
-      colors,
-      style,
-      gradientStyle,
-      textStyle
-    } = this.props;
+    const { label, backgroundColors, style, textStyle } = this.props;
+
+    const surfaceMarginTop = this.state.isTouched ? -2 : -6;
+    const borderColor = getDifferentLuminance(backgroundColors[0], -0.3);
 
     return (
-      <Touchable onPress={onPress} style={[styles.container, style]}>
-        <LinearGradient
-          style={[styles.gradient, gradientStyle]}
-          colors={colors}
-          start={[0, 0]}
-          end={[1, 0]}
-        >
-          <Text style={[styles.text, textStyle]}>{label}</Text>
-        </LinearGradient>
-      </Touchable>
+      <TouchableWithoutFeedback
+        onPressIn={this.handlePressIn}
+        onPressOut={this.handlePressOut}
+        delayPressIn={0}
+      >
+        <View style={[styles.container, style]}>
+          <LinearGradient
+            style={[
+              styles.surface,
+              { marginTop: surfaceMarginTop, borderColor }
+            ]}
+            colors={backgroundColors}
+            start={[0, 0]}
+            end={[1, 0]}
+          >
+            <Text style={[styles.text, textStyle]}>{label}</Text>
+          </LinearGradient>
+          <LinearGradient
+            style={[styles.shadow, { borderColor }]}
+            colors={this.darkerBackgroundColors}
+            start={[0, 0]}
+            end={[1, 0]}
+          >
+            <Text style={[styles.text, textStyle]}>{label}</Text>
+          </LinearGradient>
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
@@ -51,15 +98,24 @@ export default class extends React.PureComponent<Props> {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    borderRadius: 4,
-    overflow: "hidden"
+    borderRadius: 4
   },
-  gradient: {
+  surface: {
+    width: "100%",
     borderRadius: 4,
     overflow: "hidden",
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     paddingVertical: 2,
-    borderColor: "rgba(0,0,0,0.1)"
+    zIndex: 2
+  },
+  shadow: {
+    width: "100%",
+    position: "absolute",
+    borderRadius: 4,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingVertical: 2,
+    zIndex: 1
   },
   text: {
     fontSize: 26,

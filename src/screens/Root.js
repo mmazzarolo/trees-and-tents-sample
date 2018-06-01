@@ -1,9 +1,13 @@
 /* @flow */
 import * as React from "react";
+import { UIManager } from "react-native";
 import { Provider } from "react-redux";
 import { Font } from "expo";
 import Router from "../screens/Router";
 import createReduxStore from "../utils/createReduxStore";
+
+UIManager.setLayoutAnimationEnabledExperimental &&
+  UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const store = createReduxStore();
 

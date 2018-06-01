@@ -1,10 +1,11 @@
 /* @flow */
 import * as React from "react";
 import { Animated, Image, View, StyleSheet } from "react-native";
+import metrics from "../config/metrics";
 import logoImage from "../assets/images/logo-transparent.png";
 import backgroundImage from "../assets/images/title-background.png";
 
-const BACKGROUND_ANIM_DURATION = 4000;
+const BACKGROUND_ANIM_DURATION = 10000;
 
 class Logo extends React.PureComponent<{}> {
   backgroundAnimValue: Animated.Value = new Animated.Value(0);
@@ -31,7 +32,7 @@ class Logo extends React.PureComponent<{}> {
       {
         translateX: this.backgroundAnimValue.interpolate({
           inputRange: [0, 1],
-          outputRange: [-30, 0],
+          outputRange: [0, -metrics.LOGO_SIZE],
           extrapolate: "clamp"
         })
       }
@@ -50,17 +51,14 @@ class Logo extends React.PureComponent<{}> {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
-    width: "70%",
-    alignSelf: "center",
-    alignItems: "center",
-    justifyContent: "center",
+    height: metrics.LOGO_SIZE,
+    width: metrics.LOGO_SIZE,
     overflow: "hidden",
     zIndex: 2
   },
   backgroundImage: {
-    height: "120%",
-    width: "120%",
+    height: "100%",
+    width: "200%",
     resizeMode: "cover"
   },
   titleImage: {

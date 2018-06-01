@@ -8,5 +8,6 @@ export default {
   SCREEN_HEIGHT: width < height ? height : width,
   STATUS_BAR_HEIGHT: 24,
   DIGIT_SIZE: 40,
-  TILE_BORDER_RADIUS: 4
+  TILE_BORDER_RADIUS: 4,
+  LOGO_SIZE: height * 0.4
 };
