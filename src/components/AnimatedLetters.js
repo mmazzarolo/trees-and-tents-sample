@@ -7,8 +7,8 @@ import Text from "../components/Text";
 const LETTER_ANIM_DURATION_DEFAULT = 100;
 
 type Props = {
-  initialDelay?: number,
-  duration?: number,
+  initialDelay: number,
+  duration: number,
   text: string
 };
 

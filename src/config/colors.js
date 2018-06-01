@@ -9,6 +9,7 @@ export default {
   TIN: "#7F7F7F",
   PUERTO_RICO: "#30c9ad",
   DULL_CYAN: "#30b9c9",
+  ZIRCON: "#E0E0E0",
 
   AMAZON: "#39825F",
   MEDIUM_SEA_GREEN: "#41AC70",

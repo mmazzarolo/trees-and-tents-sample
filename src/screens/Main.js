@@ -29,7 +29,7 @@ class Main extends React.Component<Props, State> {
     transitioningTo: null
   };
 
-  screenFadeAnimValue: Animated.Value = new Animated.Value(0);
+  screenFadeAnimValue: Animated.Value = new Animated.Value(0.01);
 
   componentDidMount() {
     Animated.timing(this.screenFadeAnimValue, {
@@ -78,7 +78,8 @@ const styles = StyleSheet.create({
     width: "70%",
     alignSelf: "center",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    zIndex: 2
   }
 });
 

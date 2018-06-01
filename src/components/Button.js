@@ -14,11 +14,23 @@ import colors from "../config/colors";
 import type { ReactNativeViewStyle } from "../types/ReactNativeViewStyle";
 import type { ReactNativeTextStyle } from "../types/ReactNativeTextStyle";
 
+const SHADOW_HEIGHT = 6;
+const BUTTON_HEIGHT = 40;
+const LAYOUT_ANIM_DURATION = 40;
 const CUSTOM_LAYOUT_ANIMATION = {
-  duration: 40,
-  create: { type: LayoutAnimation.Types.linear },
-  update: { type: LayoutAnimation.Types.linear },
-  delete: { type: LayoutAnimation.Types.linear }
+  duration: LAYOUT_ANIM_DURATION,
+  create: {
+    type: LayoutAnimation.Types.linear,
+    property: LayoutAnimation.Properties.opacity
+  },
+  update: {
+    type: LayoutAnimation.Types.linear,
+    property: LayoutAnimation.Properties.opacity
+  },
+  delete: {
+    type: LayoutAnimation.Types.linear,
+    property: LayoutAnimation.Properties.opacity
+  }
 };
 
 type Props = {
@@ -60,7 +72,7 @@ export default class extends React.PureComponent<Props, State> {
   render() {
     const { label, backgroundColors, style, textStyle } = this.props;
 
-    const surfaceMarginTop = this.state.isTouched ? -2 : -6;
+    const surfaceMarginTop = this.state.isTouched ? SHADOW_HEIGHT : 2;
     const borderColor = getDifferentLuminance(backgroundColors[0], -0.3);
 
     return (
@@ -98,23 +110,27 @@ export default class extends React.PureComponent<Props, State> {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    borderRadius: 4
+    borderRadius: 4,
+    height: BUTTON_HEIGHT + SHADOW_HEIGHT
   },
   surface: {
     width: "100%",
     borderRadius: 4,
+    height: BUTTON_HEIGHT,
+    alignItems: "center",
+    justifyContent: "center",
     overflow: "hidden",
     borderWidth: StyleSheet.hairlineWidth,
-    paddingVertical: 2,
     zIndex: 2
   },
   shadow: {
+    height: BUTTON_HEIGHT,
+    marginTop: SHADOW_HEIGHT,
     width: "100%",
     position: "absolute",
     borderRadius: 4,
     overflow: "hidden",
     borderWidth: StyleSheet.hairlineWidth,
-    paddingVertical: 2,
     zIndex: 1
   },
   text: {
