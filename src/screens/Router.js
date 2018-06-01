@@ -3,6 +3,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { View } from "react-native";
 import Game from "./Game";
+import StageSelection from "./StageSelection";
 // import Splash from "./Splash";
 import Main from "./Main";
 import Success from "./Success";
@@ -29,7 +30,7 @@ class Router extends React.Component<Props> {
       case "GAME":
         return <Game />;
       case "STAGES":
-        return <Main />;
+        return <StageSelection />;
       case "SUCCESS":
         return <Success />;
       default:

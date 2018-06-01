@@ -1,4 +1,6 @@
 /* @flow */
+import keys from "../config/keys";
+
 import type { Action } from "../types/Action";
 import type { ReduxState } from "../types/ReduxState";
 import type { Route } from "../types/Route";
@@ -14,7 +16,7 @@ export type RouterState = {|
 //   INITIAL STATE
 // ===========================
 export const initialState: RouterState = {
-  currentRoute: "SUCCESS"
+  currentRoute: keys.INITIAL_ROUTE
 };
 
 // ===========================
