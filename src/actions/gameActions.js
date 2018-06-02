@@ -1,10 +1,29 @@
 /* @flow */
-import type { Action } from "../types/Action";
-import type { Puzzle } from "../types/Puzzle";
+import getRandomPuzzle from "../utils/getRandomPuzzle";
 
-export const startGame = (puzzle: Puzzle): Action => {
+import type { ReduxAction } from "../types/ReduxAction";
+import type { PuzzleDifficulty } from "../types/PuzzleDifficulty";
+import type { PuzzleSize } from "../types/PuzzleSize";
+import type { ReduxDispatch } from "../types/ReduxDispatch";
+import type { ReduxGetState } from "../types/ReduxGetState";
+
+export const startGame = () => {
+  return (dispatch: ReduxDispatch, getState: ReduxGetState) => {
+    const { puzzleDifficulty, puzzleSize } = getState().game;
+    const puzzle = getRandomPuzzle(puzzleDifficulty, puzzleSize);
+    dispatch({
+      type: "START_GAME",
+      payload: puzzle
+    });
+  };
+};
+
+export const setPuzzleInfo = (
+  difficulty: PuzzleDifficulty,
+  size: PuzzleSize
+): ReduxAction => {
   return {
-    type: "START_GAME",
-    payload: puzzle
+    type: "SET_PUZZLE_INFO",
+    payload: { difficulty, size }
   };
 };

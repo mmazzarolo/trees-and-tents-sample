@@ -1,37 +1,30 @@
 /* @flow */
 import * as React from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, Image, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
 import * as routerActions from "../actions/routerActions";
-import { LinearGradient } from "expo";
-import Touchable from "react-native-platform-touchable";
-import Logo from "../components/Logo";
+import * as gameActions from "../actions/gameActions";
+import arrowRightImage from "../assets/images/arrow-right.png";
 import Text from "../components/Text";
 import Button from "../components/Button";
-import metrics from "../config/metrics";
 
-import type { Route } from "../types/Route";
+import type { PuzzleDifficulty } from "../types/PuzzleDifficulty";
+import type { PuzzleSize } from "../types/PuzzleSize";
 
 type Props = {
+  setPuzzleInfo: typeof gameActions.setPuzzleInfo,
   goToScreen: typeof routerActions.goToScreen
-};
-
-type State = {
-  transitioningTo: ?Route
 };
 
 const SCREEN_FADE_IN_ANIM_DURATION = 600;
 const SCREEN_FADE_OUT_ANIM_DURATION = 200;
 
 const mapDispatchToProps = {
-  goToScreen: routerActions.goToScreen
+  goToScreen: routerActions.goToScreen,
+  setPuzzleInfo: gameActions.setPuzzleInfo
 };
 
-class Main extends React.Component<Props, State> {
-  state = {
-    transitioningTo: null
-  };
-
+class Main extends React.Component<Props> {
   screenFadeAnimValue: Animated.Value = new Animated.Value(0);
 
   componentDidMount() {
@@ -42,12 +35,33 @@ class Main extends React.Component<Props, State> {
     }).start();
   }
 
-  handleStartClick = async () => {
+  handleButtonPress = (difficulty: PuzzleDifficulty, size: PuzzleSize) => {
+    this.props.setPuzzleInfo(difficulty, size);
     Animated.timing(this.screenFadeAnimValue, {
       toValue: 0,
       duration: SCREEN_FADE_OUT_ANIM_DURATION,
       useNativeDriver: true
     }).start(() => this.props.goToScreen("GAME"));
+  };
+
+  renderButton = (
+    difficulty: PuzzleDifficulty,
+    size: PuzzleSize,
+    backgroundColors: string[]
+  ) => {
+    return (
+      <Button
+        onPress={() => this.handleButtonPress(difficulty, size)}
+        label={size}
+        backgroundColors={backgroundColors}
+        style={styles.button}
+        textStyle={styles.buttonText}
+        rightElement={
+          <Image source={arrowRightImage} style={styles.buttonImage} />
+        }
+        height={60}
+      />
+    );
   };
 
   render() {
@@ -57,29 +71,15 @@ class Main extends React.Component<Props, State> {
       >
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>easy</Text>
-          <Touchable style={styles.stage}>
-            <LinearGradient
-              colors={["#30c9ad", "#30b9c9"]}
-              start={[0, 0]}
-              end={[1, 0]}
-              style={styles.stageGradient}
-            >
-              <Text style={styles.stageText}>6x6</Text>
-            </LinearGradient>
-          </Touchable>
-          <Touchable style={styles.stage}>
-            <LinearGradient
-              colors={["#30c9ad", "#5493EA"]}
-              style={styles.stageGradient}
-              start={[0, 0]}
-              end={[1, 0]}
-            >
-              <Text style={styles.stageText}>8x8</Text>
-            </LinearGradient>
-          </Touchable>
+          {this.renderButton("easy", "6x6", ["#30c9ad", "#30b9c9"])}
+          {this.renderButton("easy", "8x8", ["#30b9c9", "#5493EA"])}
+          {this.renderButton("easy", "10x10", ["#5493EA", "#4373E7"])}
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>hard</Text>
+          {this.renderButton("hard", "6x6", ["#FFDD75", "#FFBA6D"])}
+          {this.renderButton("hard", "8x8", ["#FFBA6D", "#FE816D"])}
+          {this.renderButton("hard", "10x10", ["#FE816D", "#EC6F86"])}
         </View>
       </Animated.View>
     );
@@ -88,36 +88,25 @@ class Main extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: metrics.STATUS_BAR_HEIGHT,
     height: "100%",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     alignItems: "center"
   },
   section: {
     width: "100%",
-    padding: 20
+    paddingHorizontal: 60
   },
   sectionLabel: {
     color: "gray",
     fontSize: 20
   },
-  stage: {
-    // borderRadius: 8,
-    overflow: "hidden",
-    marginBottom: 8
-    // borderWidth: 2,
-    // borderColor: "rgba(0,0,0,0.1)"
+  button: {},
+  buttonText: {
+    fontSize: 26
   },
-  stageGradient: {
-    borderRadius: 8,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)"
-  },
-  stageText: {
-    color: "white",
-    fontSize: 36,
-    padding: 12
+  buttonImage: {
+    height: 26,
+    width: 26
   }
 });
 

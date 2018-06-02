@@ -5,14 +5,12 @@ import { StyleSheet, View, PanResponder, findNodeHandle } from "react-native";
 import NativeMethodsMixin from "NativeMethodsMixin";
 import { connect } from "react-redux";
 import chunk from "lodash/chunk";
-import random from "lodash/random";
 import Tile from "../components/Tile";
 import Digit from "../components/Digit";
 import * as routerActions from "../actions/routerActions";
 import * as gameActions from "../actions/gameActions";
 import * as boardActions from "../actions/boardActions";
 import isPointInBoundingRect from "../utils/isPointInBoundingRect";
-import getPuzzle from "../utils/getPuzzle";
 import getTileSize from "../utils/getTileSize";
 import delay from "../utils/delay";
 import device from "../config/device";
@@ -68,7 +66,7 @@ class Game extends React.Component<Props> {
   isHovering: boolean = false;
 
   componentDidMount() {
-    this.props.startGame(getPuzzle("easy", "6x6", random(9)));
+    this.props.startGame();
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -212,6 +210,7 @@ class Game extends React.Component<Props> {
           numberOfTents={digit.numberOfTents}
           isValid={digit.isValid}
           isFilled={digit.isFilled}
+          isVisible={digit.isVisible}
         />
       );
     });
@@ -226,6 +225,7 @@ class Game extends React.Component<Props> {
           numberOfTents={digit.numberOfTents}
           isValid={digit.isValid}
           isFilled={digit.isFilled}
+          isVisible={digit.isVisible}
         />
       );
     });

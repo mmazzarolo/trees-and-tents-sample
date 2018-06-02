@@ -44,7 +44,7 @@ class Main extends React.Component<Props, State> {
       toValue: 0,
       duration: SCREEN_FADE_OUT_ANIM_DURATION,
       useNativeDriver: true
-    }).start(() => this.props.goToScreen("GAME"));
+    }).start(() => this.props.goToScreen("STAGES"));
   };
 
   render() {

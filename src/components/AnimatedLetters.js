@@ -79,7 +79,10 @@ const styles = StyleSheet.create({
   },
   letter: {
     color: "white",
-    fontSize: 52
+    fontSize: 52,
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1
   }
 });
 

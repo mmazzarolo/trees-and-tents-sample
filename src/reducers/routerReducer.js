@@ -1,7 +1,7 @@
 /* @flow */
 import keys from "../config/keys";
 
-import type { Action } from "../types/Action";
+import type { ReduxAction } from "../types/ReduxAction";
 import type { ReduxState } from "../types/ReduxState";
 import type { Route } from "../types/Route";
 
@@ -24,7 +24,7 @@ export const initialState: RouterState = {
 // ===========================
 export default (
   state: RouterState = initialState,
-  action: Action
+  action: ReduxAction
 ): RouterState => {
   switch (action.type) {
     case "GO_TO_SCREEN":

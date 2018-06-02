@@ -1,5 +1,5 @@
 /* @flow */
-import React from "react";
+import * as React from "react";
 import {
   LayoutAnimation,
   StyleSheet,
@@ -14,8 +14,6 @@ import colors from "../config/colors";
 import type { ReactNativeViewStyle } from "../types/ReactNativeViewStyle";
 import type { ReactNativeTextStyle } from "../types/ReactNativeTextStyle";
 
-const SHADOW_HEIGHT = 6;
-const BUTTON_HEIGHT = 40;
 const LAYOUT_ANIM_DURATION = 40;
 const CUSTOM_LAYOUT_ANIMATION = {
   duration: LAYOUT_ANIM_DURATION,
@@ -36,7 +34,11 @@ const CUSTOM_LAYOUT_ANIMATION = {
 type Props = {
   onPress: any => mixed,
   label: string,
+  leftElement?: React.Node,
+  rightElement?: React.Node,
   backgroundColors: string[],
+  height: number,
+  shadowHeight: number,
   style?: ReactNativeViewStyle,
   textStyle?: ReactNativeTextStyle
 };
@@ -47,7 +49,9 @@ type State = {
 
 export default class extends React.PureComponent<Props, State> {
   static defaultProps = {
-    backgroundColors: [colors.PUERTO_RICO, colors.DULL_CYAN]
+    backgroundColors: [colors.PUERTO_RICO, colors.DULL_CYAN],
+    height: 40,
+    shadowHeight: 6
   };
 
   state = {
@@ -70,9 +74,18 @@ export default class extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { label, backgroundColors, style, textStyle } = this.props;
+    const {
+      label,
+      backgroundColors,
+      height,
+      leftElement,
+      rightElement,
+      shadowHeight,
+      style,
+      textStyle
+    } = this.props;
 
-    const surfaceMarginTop = this.state.isTouched ? SHADOW_HEIGHT : 2;
+    const surfaceMarginTop = this.state.isTouched ? shadowHeight : 2;
     const borderColor = getDifferentLuminance(backgroundColors[0], -0.3);
 
     return (
@@ -81,26 +94,37 @@ export default class extends React.PureComponent<Props, State> {
         onPressOut={this.handlePressOut}
         delayPressIn={0}
       >
-        <View style={[styles.container, style]}>
+        <View
+          style={[styles.container, style, { height: height + shadowHeight }]}
+        >
           <LinearGradient
             style={[
               styles.surface,
-              { marginTop: surfaceMarginTop, borderColor }
+              {
+                justifyContent:
+                  leftElement || rightElement ? "space-between" : "center",
+                marginTop: surfaceMarginTop,
+                borderColor,
+                height
+              }
             ]}
             colors={backgroundColors}
             start={[0, 0]}
             end={[1, 0]}
           >
+            {leftElement}
             <Text style={[styles.text, textStyle]}>{label}</Text>
+            {rightElement}
           </LinearGradient>
           <LinearGradient
-            style={[styles.shadow, { borderColor }]}
+            style={[
+              styles.shadow,
+              { borderColor, height, marginTop: shadowHeight }
+            ]}
             colors={this.darkerBackgroundColors}
             start={[0, 0]}
             end={[1, 0]}
-          >
-            <Text style={[styles.text, textStyle]}>{label}</Text>
-          </LinearGradient>
+          />
         </View>
       </TouchableWithoutFeedback>
     );
@@ -110,22 +134,19 @@ export default class extends React.PureComponent<Props, State> {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    borderRadius: 4,
-    height: BUTTON_HEIGHT + SHADOW_HEIGHT
+    borderRadius: 4
   },
   surface: {
     width: "100%",
     borderRadius: 4,
-    height: BUTTON_HEIGHT,
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    paddingHorizontal: 10,
     overflow: "hidden",
     borderWidth: StyleSheet.hairlineWidth,
     zIndex: 2
   },
   shadow: {
-    height: BUTTON_HEIGHT,
-    marginTop: SHADOW_HEIGHT,
     width: "100%",
     position: "absolute",
     borderRadius: 4,

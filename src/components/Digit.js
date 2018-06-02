@@ -12,7 +12,8 @@ type Props = {
   height: number,
   numberOfTents: ?number,
   isValid: ?boolean,
-  isFilled: ?boolean
+  isFilled: ?boolean,
+  isVisible: ?boolean
 };
 
 type State = {
@@ -23,7 +24,8 @@ class Digit extends React.Component<Props, State> {
   static defaultProps = {
     numberOfTents: null,
     isValid: true,
-    isFilled: false
+    isFilled: false,
+    isVisible: false
   };
 
   state = {
@@ -53,7 +55,14 @@ class Digit extends React.Component<Props, State> {
   }
 
   render() {
-    const { width, height, numberOfTents, isValid, isFilled } = this.props;
+    const {
+      width,
+      height,
+      numberOfTents,
+      isValid,
+      isFilled,
+      isVisible
+    } = this.props;
     const { spawnAnimValue } = this.state;
     let color;
     if (!isValid) {
@@ -67,11 +76,13 @@ class Digit extends React.Component<Props, State> {
       <Animated.View
         style={[styles.container, { width, height, opacity: spawnAnimValue }]}
       >
-        <Text style={[styles.text, { color }]}>
-          {numberOfTents !== null && numberOfTents !== undefined
-            ? numberOfTents
-            : ""}
-        </Text>
+        {isVisible && (
+          <Text style={[styles.text, { color }]}>
+            {numberOfTents !== null && numberOfTents !== undefined
+              ? numberOfTents
+              : ""}
+          </Text>
+        )}
       </Animated.View>
     );
   }

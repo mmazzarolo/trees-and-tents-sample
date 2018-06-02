@@ -2,7 +2,7 @@
 import buildBoard from "../utils/buildBoard";
 import updateBoard from "../utils/updateBoard";
 
-import type { Action } from "../types/Action";
+import type { ReduxAction } from "../types/ReduxAction";
 import type { Board } from "../types/Board";
 
 // ===========================
@@ -26,7 +26,7 @@ export const initialState: BoardState = {
 // ===========================
 export default (
   state: BoardState = initialState,
-  action: Action
+  action: ReduxAction
 ): BoardState => {
   switch (action.type) {
     case "START_GAME": {
