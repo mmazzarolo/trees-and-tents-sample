@@ -171,7 +171,7 @@ class Game extends React.Component<Props> {
   };
 
   render() {
-    const { tiles, size, digitsX, digitsY } = this.props;
+    const { tiles, size, digitsX, digitsY, isSolved } = this.props;
     const tilesByRows = chunk(tiles, size);
 
     const tileSize = getTileSize(size);
@@ -194,6 +194,7 @@ class Game extends React.Component<Props> {
             onPress={() => this.handleTilePointerUp(tile)}
             isValid={tile.isValid}
             status={tile.status}
+            isBoardSolved={isSolved}
           />
         );
       });

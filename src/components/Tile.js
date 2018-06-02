@@ -22,6 +22,7 @@ const SPAWN_ANIM_DURATION = 200;
 const SPAWN_ANIM_DELAY = 200;
 const BACKGROUND_ANIM_DURATION = 200;
 const TENT_IMAGE_ANIM_DURATION = 200;
+const SOLVED_ANIM_DURATION = 1500;
 
 type Props = {
   id: number,
@@ -29,28 +30,21 @@ type Props = {
   height: number,
   status: BoardTileStatus,
   isValid: boolean,
-  onPress: () => mixed
+  onPress: () => mixed,
+  isBoardSolved: boolean
 };
 
-type State = {
-  spawnAnimValue: Animated.Value,
-  backgroundAnimValue: Animated.Value,
-  tentImageAnimValue: Animated.Value
-};
-
-class Tile extends React.Component<Props, State> {
+class Tile extends React.Component<Props> {
   tileRef: any = null;
-
-  state = {
-    spawnAnimValue: new Animated.Value(0),
-    backgroundAnimValue: new Animated.Value(0),
-    tentImageAnimValue: new Animated.Value(0)
-  };
+  spawnAnimValue: Animated.Value = new Animated.Value(0);
+  backgroundAnimValue: Animated.Value = new Animated.Value(0);
+  tentImageAnimValue: Animated.Value = new Animated.Value(0);
+  solvedAnimValue: Animated.Value = new Animated.Value(0);
 
   componentDidMount() {
     Animated.sequence([
       Animated.delay(SPAWN_ANIM_DELAY + this.props.id * 20),
-      Animated.timing(this.state.spawnAnimValue, {
+      Animated.timing(this.spawnAnimValue, {
         toValue: 1,
         duration: SPAWN_ANIM_DURATION,
         useNativeDriver: true
@@ -61,7 +55,9 @@ class Tile extends React.Component<Props, State> {
   shouldComponentUpdate(prevProps: Props) {
     const didStatusChange = prevProps.status !== this.props.status;
     const didValidChange = prevProps.isValid !== this.props.isValid;
-    if (didStatusChange || didValidChange) {
+    const didSolvedChange =
+      prevProps.isBoardSolved !== this.props.isBoardSolved;
+    if (didStatusChange || didValidChange || didSolvedChange) {
       return true;
     }
     return false;
@@ -70,45 +66,66 @@ class Tile extends React.Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     if (prevProps.status !== this.props.status) {
       if (this.props.status === "UNSIGNED") {
-        Animated.timing(this.state.backgroundAnimValue, {
+        Animated.timing(this.backgroundAnimValue, {
           toValue: 0,
           duration: BACKGROUND_ANIM_DURATION,
           useNativeDriver: true
         }).start();
-        Animated.timing(this.state.tentImageAnimValue, {
+        Animated.timing(this.tentImageAnimValue, {
           toValue: 0,
           duration: TENT_IMAGE_ANIM_DURATION,
           useNativeDriver: true
         }).start();
       } else if (this.props.status === "SIGNED_AS_EMPTY") {
-        Animated.timing(this.state.backgroundAnimValue, {
+        Animated.timing(this.backgroundAnimValue, {
           toValue: 1,
           duration: BACKGROUND_ANIM_DURATION,
           useNativeDriver: true
         }).start();
       } else if (this.props.status === "SIGNED_AS_TENT") {
-        Animated.timing(this.state.tentImageAnimValue, {
+        Animated.timing(this.tentImageAnimValue, {
           toValue: 1,
           duration: TENT_IMAGE_ANIM_DURATION,
           useNativeDriver: true
         }).start();
       }
     }
+    if (!prevProps.isBoardSolved && this.props.isBoardSolved) {
+      Animated.timing(this.solvedAnimValue, {
+        toValue: 1,
+        duration: SOLVED_ANIM_DURATION,
+        useNativeDriver: true
+      }).start();
+    }
   }
 
   render() {
-    const { status, onPress, width, height } = this.props;
+    const { status, onPress, width, height, isBoardSolved } = this.props;
+    console.log("isBoardSolved", isBoardSolved);
     const {
       spawnAnimValue,
       backgroundAnimValue,
-      tentImageAnimValue
-    } = this.state;
+      tentImageAnimValue,
+      solvedAnimValue
+    } = this;
     const imageInTransform = [
       {
-        scale: tentImageAnimValue.interpolate({
-          inputRange: [0, 0.75, 1],
-          outputRange: [0.01, 1.2, 1],
-          extrapolate: "clamp"
+        scale: isBoardSolved
+          ? solvedAnimValue.interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [1, 1.5, 1],
+              extrapolate: "clamp"
+            })
+          : tentImageAnimValue.interpolate({
+              inputRange: [0, 0.75, 1],
+              outputRange: [0.01, 1.2, 1],
+              extrapolate: "clamp"
+            })
+      },
+      {
+        rotate: solvedAnimValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: ["0deg", "360deg"]
         })
       }
     ];
