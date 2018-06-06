@@ -1,13 +1,12 @@
 /* @flow */
 import * as React from "react";
 import { connect } from "react-redux";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Game from "./Game";
 import StageSelection from "./StageSelection";
-// import Splash from "./Splash";
-import Main from "./Main";
-import Success from "./Success";
-// import Stages from "./Stages";
+import Menu from "./Menu";
+import Solved from "./Solved";
+import metrics from "../config/metrics";
 
 import type { Route } from "../types/Route";
 import type { ReduxState } from "../types/ReduxState";
@@ -23,24 +22,28 @@ const mapStateToProps = (state: ReduxState) => ({
 class Router extends React.Component<Props> {
   renderRoute = () => {
     switch (this.props.currentRoute) {
-      case "SPLASH":
-        return <Main />;
-      case "MAIN":
-        return <Main />;
+      case "MENU":
+        return <Menu />;
       case "GAME":
         return <Game />;
-      case "STAGES":
+      case "STAGE_SELECTION":
         return <StageSelection />;
-      case "SUCCESS":
-        return <Success />;
+      case "SOLVED":
+        return <Solved />;
       default:
         return null;
     }
   };
 
   render() {
-    return <View>{this.renderRoute()}</View>;
+    return <View style={styles.container}>{this.renderRoute()}</View>;
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: metrics.STATUS_BAR_HEIGHT
+  }
+});
 
 export default connect(mapStateToProps)(Router);

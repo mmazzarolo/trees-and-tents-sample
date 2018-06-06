@@ -1,4 +1,4 @@
 /* @flow */
 export default {
-  INITIAL_ROUTE: "MAIN"
+  INITIAL_ROUTE: "MENU"
 };

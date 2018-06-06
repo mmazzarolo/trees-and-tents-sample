@@ -5,6 +5,8 @@ import { connect } from "react-redux";
 import * as routerActions from "../actions/routerActions";
 import * as gameActions from "../actions/gameActions";
 import arrowRightImage from "../assets/images/arrow-right.png";
+import arrowLeftImage from "../assets/images/arrow-left.png";
+import metrics from "../config/metrics";
 import Text from "../components/Text";
 import Button from "../components/Button";
 
@@ -12,36 +14,45 @@ import type { PuzzleDifficulty } from "../types/PuzzleDifficulty";
 import type { PuzzleSize } from "../types/PuzzleSize";
 
 type Props = {
-  setPuzzleInfo: typeof gameActions.setPuzzleInfo,
-  goToScreen: typeof routerActions.goToScreen
+  startNewGame: typeof gameActions.startNewGame,
+  goToMenuScreen: typeof routerActions.goToMenuScreen,
+  goToGameScreen: typeof routerActions.goToGameScreen
 };
 
-const SCREEN_FADE_IN_ANIM_DURATION = 600;
-const SCREEN_FADE_OUT_ANIM_DURATION = 200;
+const CONTAINER_ANIM_DURATION = 400;
 
 const mapDispatchToProps = {
-  goToScreen: routerActions.goToScreen,
-  setPuzzleInfo: gameActions.setPuzzleInfo
+  goToMenuScreen: routerActions.goToMenuScreen,
+  goToGameScreen: routerActions.goToGameScreen,
+  startNewGame: gameActions.startNewGame
 };
 
-class Main extends React.Component<Props> {
-  screenFadeAnimValue: Animated.Value = new Animated.Value(0);
+class StageSelection extends React.Component<Props> {
+  containerAnimValue: Animated.Value = new Animated.Value(0);
 
   componentDidMount() {
-    Animated.timing(this.screenFadeAnimValue, {
+    Animated.timing(this.containerAnimValue, {
       toValue: 1,
-      duration: SCREEN_FADE_IN_ANIM_DURATION,
+      duration: CONTAINER_ANIM_DURATION,
       useNativeDriver: true
     }).start();
   }
 
-  handleButtonPress = (difficulty: PuzzleDifficulty, size: PuzzleSize) => {
-    this.props.setPuzzleInfo(difficulty, size);
-    Animated.timing(this.screenFadeAnimValue, {
+  handleBackButtonPress = () => {
+    Animated.timing(this.containerAnimValue, {
       toValue: 0,
-      duration: SCREEN_FADE_OUT_ANIM_DURATION,
+      duration: CONTAINER_ANIM_DURATION,
       useNativeDriver: true
-    }).start(() => this.props.goToScreen("GAME"));
+    }).start(this.props.goToMenuScreen);
+  };
+
+  handleButtonPress = (difficulty: PuzzleDifficulty, size: PuzzleSize) => {
+    this.props.startNewGame(difficulty, size);
+    Animated.timing(this.containerAnimValue, {
+      toValue: 0,
+      duration: CONTAINER_ANIM_DURATION,
+      useNativeDriver: true
+    }).start(this.props.goToGameScreen);
   };
 
   renderButton = (
@@ -65,10 +76,34 @@ class Main extends React.Component<Props> {
   };
 
   render() {
+    const containerTransform = [
+      {
+        translateY: this.containerAnimValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [metrics.SCREEN_HEIGHT, 0],
+          extrapolate: "clamp"
+        })
+      }
+    ];
     return (
       <Animated.View
-        style={[styles.container, { opacity: this.screenFadeAnimValue }]}
+        style={[styles.container, { transform: containerTransform }]}
       >
+        <View style={styles.header}>
+          <Button
+            onPress={this.handleBackButtonPress}
+            label={"Back"}
+            backgroundColors={["#808080", "#808080"]}
+            style={styles.headerButton}
+            textStyle={styles.headerButtonText}
+            leftElement={
+              <Image source={arrowLeftImage} style={styles.headerButtonImage} />
+            }
+          />
+          <Text style={styles.headerTitle} numberOfLines={2}>
+            Select a puzzle
+          </Text>
+        </View>
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>easy</Text>
           {this.renderButton("easy", "6x6", ["#30c9ad", "#30b9c9"])}
@@ -90,11 +125,31 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     justifyContent: "space-evenly",
-    alignItems: "center"
+    alignItems: "center",
+    paddingHorizontal: 30
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%"
+  },
+  headerTitle: {
+    fontSize: 26,
+    color: "#666666"
+  },
+  headerButton: {
+    width: "30%"
+  },
+  headerButtonText: {
+    fontSize: 18
+  },
+  headerButtonImage: {
+    width: 18,
+    height: 18
   },
   section: {
-    width: "100%",
-    paddingHorizontal: 60
+    width: "100%"
   },
   sectionLabel: {
     color: "gray",
@@ -110,4 +165,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(null, mapDispatchToProps)(Main);
+export default connect(null, mapDispatchToProps)(StageSelection);

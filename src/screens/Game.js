@@ -1,12 +1,20 @@
 /* @flow */
 import * as React from "react";
-import { StyleSheet, View, PanResponder, findNodeHandle } from "react-native";
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  View,
+  PanResponder,
+  findNodeHandle
+} from "react-native";
 // $FlowFixMe
 import NativeMethodsMixin from "NativeMethodsMixin";
 import { connect } from "react-redux";
 import chunk from "lodash/chunk";
 import Tile from "../components/Tile";
 import Digit from "../components/Digit";
+import Button from "../components/Button";
 import * as routerActions from "../actions/routerActions";
 import * as gameActions from "../actions/gameActions";
 import * as boardActions from "../actions/boardActions";
@@ -15,6 +23,7 @@ import getTileSize from "../utils/getTileSize";
 import delay from "../utils/delay";
 import device from "../config/device";
 import metrics from "../config/metrics";
+import arrowLeftImage from "../assets/images/arrow-left.png";
 
 import type { ReduxState } from "../types/ReduxState";
 import type { ReactNativeViewRect } from "../types/ReactNativeViewRect";
@@ -23,6 +32,7 @@ import type { BoardDigit } from "../types/BoardDigit";
 import type { BoardTile } from "../types/BoardTile";
 
 const SOLVED_ANIMATION_DURATION = 2000;
+const BOARD_ANIM_VALUE_DURATION = 400;
 
 type Props = {
   status: GameStatus,
@@ -32,8 +42,9 @@ type Props = {
   digitsY: BoardDigit[],
   isSolved: boolean,
   updateTileStatus: typeof boardActions.updateTileStatus,
-  startGame: typeof gameActions.startGame,
-  goToScreen: typeof routerActions.goToScreen
+  pauseCurrentGame: typeof gameActions.pauseCurrentGame,
+  goToMenuScreen: typeof routerActions.goToMenuScreen,
+  goToSolvedScreen: typeof routerActions.goToSolvedScreen
 };
 
 const mapStateToProps = (state: ReduxState) => ({
@@ -46,48 +57,44 @@ const mapStateToProps = (state: ReduxState) => ({
 });
 
 const mapDispatchToProps = {
-  startGame: gameActions.startGame,
   updateTileStatus: boardActions.updateTileStatus,
-  goToScreen: routerActions.goToScreen
+  pauseCurrentGame: gameActions.pauseCurrentGame,
+  goToMenuScreen: routerActions.goToMenuScreen,
+  goToSolvedScreen: routerActions.goToSolvedScreen
 };
 
 class Game extends React.Component<Props> {
-  isPointerDown: boolean = false;
-  isInEmptyStreak: boolean = false;
-  pointerDownTime: number = 0;
+  boardAnimValue: Animated.Value = new Animated.Value(0);
+  firstHoveredTile: ?BoardTile = null;
+  lastHoveredTile: ?BoardTile = null;
+  isHovering: boolean = false;
   // $FlowFixMe
   tilesRefs: (?Tile)[] = Array.from({ length: this.props.size });
   // $FlowFixMe
   tilesBoundigClientRects: (?ReactNativeViewRect)[] = Array.from({
     length: this.props.size
   });
-  firstHoveredTile: ?BoardTile = null;
-  lastHoveredTile: ?BoardTile = null;
-  isHovering: boolean = false;
 
   componentDidMount() {
-    this.props.startGame();
+    this.buildTilesBoundigClientRects();
+    Animated.timing(this.boardAnimValue, {
+      toValue: 1,
+      duration: BOARD_ANIM_VALUE_DURATION,
+      useNativeDriver: true
+    }).start();
   }
 
   componentDidUpdate(prevProps: Props) {
-    const hasStartedPlaying =
-      prevProps.status !== this.props.status && this.props.status === "PLAYING";
-    if (hasStartedPlaying) {
-      this.buildTilesBoundigClientRects();
-    }
-
     const hasBeenSolved = !prevProps.isSolved && this.props.isSolved;
     if (hasBeenSolved) {
-      setTimeout(() => {
-        this.props.goToScreen("SUCCESS");
-      }, SOLVED_ANIMATION_DURATION);
+      setTimeout(this.props.goToSolvedScreen, SOLVED_ANIMATION_DURATION);
     }
   }
 
   buildTilesBoundigClientRects = async () => {
     await delay(10);
     this.tilesRefs.forEach((tileRef, index) => {
-      NativeMethodsMixin.measure.call(
+      NativeMethodsMixin.measureInWindow.call(
         findNodeHandle(tileRef),
         (x, y, width, height) => {
           const rect = { x, y: device.IS_ANDROID ? y - 24 : y, width, height };
@@ -164,10 +171,14 @@ class Game extends React.Component<Props> {
   };
 
   handleTilePointerEnter = (tile: BoardTile) => {
-    this.isInEmptyStreak = true;
     if (tile.status === "PRISTINE" || tile.status === "UNSIGNED") {
       this.props.updateTileStatus(tile.id, "SIGNED_AS_EMPTY");
     }
+  };
+
+  handleBackButtonPress = () => {
+    this.props.pauseCurrentGame();
+    this.props.goToMenuScreen();
   };
 
   render() {
@@ -240,8 +251,12 @@ class Game extends React.Component<Props> {
     boardCells.push(bottomDigits);
 
     return (
-      <View style={styles.container} {...this.boardPanResponder.panHandlers}>
-        <View style={styles.board}>
+      <Animated.View
+        style={[styles.container, { opacity: this.boardAnimValue }]}
+        {...this.boardPanResponder.panHandlers}
+      >
+        <View style={styles.header} />
+        <Animated.View style={styles.board}>
           {boardCells.map((row, rowIndex) => {
             return (
               <View style={styles.boardRow} key={`board-row-${rowIndex}`}>
@@ -249,13 +264,24 @@ class Game extends React.Component<Props> {
               </View>
             );
           })}
+        </Animated.View>
+        <View style={styles.footer}>
+          <Button
+            style={styles.button}
+            textStyle={styles.buttonText}
+            onPress={this.handleBackButtonPress}
+            label={"Back"}
+            backgroundColors={["#808080", "#808080"]}
+            leftElement={
+              <Image source={arrowLeftImage} style={styles.buttonImage} />
+            }
+            height={30}
+          />
         </View>
-      </View>
+      </Animated.View>
     );
   }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(Game);
 
 const styles = StyleSheet.create({
   container: {
@@ -269,5 +295,41 @@ const styles = StyleSheet.create({
   },
   boardRow: {
     flexDirection: "row"
+  },
+  header: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 30,
+    marginHorizontal: 30
+  },
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: "100%",
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 30,
+    marginHorizontal: 30
+  },
+  button: {
+    width: "24%"
+  },
+  buttonText: {
+    fontSize: 16
+  },
+  buttonImage: {
+    width: 16,
+    height: 16
   }
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(Game);

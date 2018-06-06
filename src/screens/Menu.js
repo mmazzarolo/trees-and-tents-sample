@@ -5,30 +5,19 @@ import { connect } from "react-redux";
 import * as routerActions from "../actions/routerActions";
 import Logo from "../components/Logo";
 import Button from "../components/Button";
-import metrics from "../config/metrics";
-
-import type { Route } from "../types/Route";
 
 type Props = {
-  goToScreen: typeof routerActions.goToScreen
-};
-
-type State = {
-  transitioningTo: ?Route
+  goToStageSelectionScreen: typeof routerActions.goToStageSelectionScreen
 };
 
 const SCREEN_FADE_IN_ANIM_DURATION = 600;
 const SCREEN_FADE_OUT_ANIM_DURATION = 200;
 
 const mapDispatchToProps = {
-  goToScreen: routerActions.goToScreen
+  goToStageSelectionScreen: routerActions.goToStageSelectionScreen
 };
 
-class Main extends React.Component<Props, State> {
-  state = {
-    transitioningTo: null
-  };
-
+class Menu extends React.Component<Props> {
   screenFadeAnimValue: Animated.Value = new Animated.Value(0.01);
 
   componentDidMount() {
@@ -44,7 +33,7 @@ class Main extends React.Component<Props, State> {
       toValue: 0,
       duration: SCREEN_FADE_OUT_ANIM_DURATION,
       useNativeDriver: true
-    }).start(() => this.props.goToScreen("STAGES"));
+    }).start(this.props.goToStageSelectionScreen);
   };
 
   render() {
@@ -56,7 +45,7 @@ class Main extends React.Component<Props, State> {
           <Logo />
         </View>
         <View style={styles.buttons}>
-          <Button label="Start" onPress={this.handleStartClick} />
+          <Button label="Play" onPress={this.handleStartClick} />
         </View>
       </Animated.View>
     );
@@ -64,9 +53,7 @@ class Main extends React.Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: metrics.STATUS_BAR_HEIGHT
-  },
+  container: {},
   logo: {
     height: "50%",
     width: "100%",
@@ -83,4 +70,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(null, mapDispatchToProps)(Main);
+export default connect(null, mapDispatchToProps)(Menu);

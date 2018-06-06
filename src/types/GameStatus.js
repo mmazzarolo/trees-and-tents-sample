@@ -1,2 +1,2 @@
 /* @flow */
-export type GameStatus = "PLAYING" | "STOPPED" | "SOLVED";
+export type GameStatus = "NEVER_PLAYED" | "PLAYING" | "PAUSED" | "SOLVED";

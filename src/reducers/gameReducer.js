@@ -18,7 +18,7 @@ export type GameState = {|
 //   INITIAL STATE
 // ===========================
 export const initialState: GameState = {
-  status: "STOPPED",
+  status: "NEVER_PLAYED",
   puzzleDifficulty: "easy",
   puzzleSize: "6x6"
 };
@@ -31,17 +31,28 @@ export default (
   action: ReduxAction
 ): GameState => {
   switch (action.type) {
-    case "START_GAME": {
-      return { ...state, status: "PLAYING" };
-    }
-
-    case "END_GAME": {
-      return { ...state, status: "STOPPED" };
-    }
-
-    case "SET_PUZZLE_INFO": {
+    case "START_NEW_GAME": {
       const { difficulty, size } = action.payload;
-      return { ...state, puzzleDifficulty: difficulty, puzzleSize: size };
+      return {
+        ...state,
+        puzzleDifficulty: difficulty,
+        puzzleSize: size,
+        status: "PLAYING"
+      };
+    }
+    case "START_NEW_GAME_WITH_CURRENT_SETTINGS": {
+      return {
+        ...state,
+        status: "PLAYING"
+      };
+    }
+
+    case "PAUSE_CURRENT_GAME": {
+      return { ...state, status: "PAUSED" };
+    }
+
+    case "RESUME_CURRENT_GAME": {
+      return { ...state, status: "PLAYING" };
     }
 
     default:

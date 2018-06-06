@@ -18,8 +18,6 @@ const Touchable = device.IS_ANDROID
   ? TouchableWithoutFeedback
   : TouchableOpacity;
 
-const SPAWN_ANIM_DURATION = 200;
-const SPAWN_ANIM_DELAY = 200;
 const BACKGROUND_ANIM_DURATION = 200;
 const TENT_IMAGE_ANIM_DURATION = 200;
 const SOLVED_ANIM_DURATION = 1500;
@@ -35,22 +33,11 @@ type Props = {
 };
 
 class Tile extends React.Component<Props> {
-  tileRef: any = null;
-  spawnAnimValue: Animated.Value = new Animated.Value(0);
   backgroundAnimValue: Animated.Value = new Animated.Value(0);
   tentImageAnimValue: Animated.Value = new Animated.Value(0);
   solvedAnimValue: Animated.Value = new Animated.Value(0);
 
-  componentDidMount() {
-    Animated.sequence([
-      Animated.delay(SPAWN_ANIM_DELAY + this.props.id * 20),
-      Animated.timing(this.spawnAnimValue, {
-        toValue: 1,
-        duration: SPAWN_ANIM_DURATION,
-        useNativeDriver: true
-      })
-    ]).start();
-  }
+  componentDidMount() {}
 
   shouldComponentUpdate(prevProps: Props) {
     const didStatusChange = prevProps.status !== this.props.status;
@@ -101,13 +88,7 @@ class Tile extends React.Component<Props> {
 
   render() {
     const { status, onPress, width, height, isBoardSolved } = this.props;
-    console.log("isBoardSolved", isBoardSolved);
-    const {
-      spawnAnimValue,
-      backgroundAnimValue,
-      tentImageAnimValue,
-      solvedAnimValue
-    } = this;
+    const { backgroundAnimValue, tentImageAnimValue, solvedAnimValue } = this;
     const imageInTransform = [
       {
         scale: isBoardSolved
@@ -154,15 +135,11 @@ class Tile extends React.Component<Props> {
       // TREE
       // ************************************
     } else if (status === "TREE") {
-      backgroundTransform = [{ scale: spawnAnimValue }];
       backgroundColor = colors.FRINGY_FLOWER;
       borderColor = colors.SILVER_TREE;
       backgroundTransform = [{ scale: 1 }];
       tileContent = (
-        <Animated.Image
-          source={treeImage}
-          style={[styles.tentImage, { transform: backgroundTransform }]}
-        />
+        <Animated.Image source={treeImage} style={[styles.treeImage]} />
       );
       // ************************************
       // SIGNED_AS_EMPTY
@@ -200,9 +177,7 @@ class Tile extends React.Component<Props> {
     }
     return (
       <Touchable onPressIn={onPress}>
-        <Animated.View
-          style={[styles.container, { opacity: spawnAnimValue, width, height }]}
-        >
+        <Animated.View style={[styles.container, { width, height }]}>
           <View style={styles.content}>
             <View style={[styles.backgroundContainer, { borderColor }]}>
               <Animated.View
@@ -227,7 +202,6 @@ export default Tile;
 
 const styles = StyleSheet.create({
   container: {
-    opacity: 0,
     backgroundColor: "white"
   },
   content: {

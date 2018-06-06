@@ -29,8 +29,9 @@ export default (
   action: ReduxAction
 ): BoardState => {
   switch (action.type) {
-    case "START_GAME": {
-      const puzzle = action.payload;
+    case "START_NEW_GAME":
+    case "START_NEW_GAME_WITH_CURRENT_SETTINGS": {
+      const puzzle = action.payload.puzzle;
       const newBoardState = buildBoard(puzzle);
       return newBoardState;
     }

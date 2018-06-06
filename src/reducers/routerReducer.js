@@ -2,7 +2,6 @@
 import keys from "../config/keys";
 
 import type { ReduxAction } from "../types/ReduxAction";
-import type { ReduxState } from "../types/ReduxState";
 import type { Route } from "../types/Route";
 
 // ===========================
@@ -30,6 +29,15 @@ export default (
     case "GO_TO_SCREEN":
       return { ...state, currentRoute: action.payload };
 
+    case "GO_TO_MENU_SCREEN":
+      return { ...state, currentRoute: "MENU" };
+    case "GO_TO_STAGE_SELECTION_SCREEN":
+      return { ...state, currentRoute: "STAGE_SELECTION" };
+    case "GO_TO_GAME_SCREEN":
+      return { ...state, currentRoute: "GAME" };
+    case "GO_TO_SOLVED_SCREEN":
+      return { ...state, currentRoute: "SOLVED" };
+
     default:
       return state;
   }
@@ -38,6 +46,3 @@ export default (
 // ===========================
 //   SELECTORS
 // ===========================
-export const getIsPlaying = (state: ReduxState): boolean => {
-  return state.game.status === "PLAYING";
-};

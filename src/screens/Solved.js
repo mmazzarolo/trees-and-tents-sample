@@ -2,28 +2,30 @@
 import * as React from "react";
 import { Animated, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
+import * as gameActions from "../actions/gameActions";
 import * as routerActions from "../actions/routerActions";
 import AnimatedLetters from "../components/AnimatedLetters";
 import Button from "../components/Button";
-import delay from "../utils/delay";
 import colors from "../config/colors";
 import metrics from "../config/metrics";
-
-import type { Route } from "../types/Route";
 
 const ENTER_ANIM_DURATION = 200;
 const TITLE_LETTER_ANIM_DURATION = 80;
 const BUTTON_ANIM_DURATION = 200;
 
 type Props = {
-  goToScreen: typeof routerActions.goToScreen
+  startNewGameWithCurrentSettings: typeof gameActions.startNewGameWithCurrentSettings,
+  goToMenuScreen: typeof routerActions.goToMenuScreen,
+  goToGameScreen: typeof routerActions.goToGameScreen
 };
 
 const mapDispatchToProps = {
-  goToScreen: routerActions.goToScreen
+  startNewGameWithCurrentSettings: gameActions.startNewGameWithCurrentSettings,
+  goToMenuScreen: routerActions.goToMenuScreen,
+  goToGameScreen: routerActions.goToGameScreen
 };
 
-class Success extends React.Component<Props> {
+class Solved extends React.Component<Props> {
   backgroundAnimValue: Animated.Value = new Animated.Value(-1);
   leftButtonAnimValue: Animated.Value = new Animated.Value(0);
   rightButtonAnimValue: Animated.Value = new Animated.Value(0);
@@ -54,15 +56,16 @@ class Success extends React.Component<Props> {
       toValue: 1,
       duration: ENTER_ANIM_DURATION,
       useNativeDriver: true
-    }).start(() => this.props.goToScreen("MAIN"));
+    }).start(this.props.goToMenuScreen);
   };
 
   handleNewPuzzlePress = () => {
+    this.props.startNewGameWithCurrentSettings();
     Animated.timing(this.backgroundAnimValue, {
       toValue: 1,
       duration: ENTER_ANIM_DURATION,
       useNativeDriver: true
-    }).start(() => this.props.goToScreen("GAME"));
+    }).start(this.props.goToGameScreen);
   };
 
   render() {
@@ -140,4 +143,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(null, mapDispatchToProps)(Success);
+export default connect(null, mapDispatchToProps)(Solved);
