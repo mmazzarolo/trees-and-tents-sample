@@ -37,7 +37,9 @@ class Tile extends React.Component<Props> {
   tentImageAnimValue: Animated.Value = new Animated.Value(0);
   solvedAnimValue: Animated.Value = new Animated.Value(0);
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.animateTile();
+  }
 
   shouldComponentUpdate(prevProps: Props) {
     const didStatusChange = prevProps.status !== this.props.status;
@@ -52,31 +54,9 @@ class Tile extends React.Component<Props> {
 
   componentDidUpdate(prevProps: Props) {
     if (prevProps.status !== this.props.status) {
-      if (this.props.status === "UNSIGNED") {
-        Animated.timing(this.backgroundAnimValue, {
-          toValue: 0,
-          duration: BACKGROUND_ANIM_DURATION,
-          useNativeDriver: true
-        }).start();
-        Animated.timing(this.tentImageAnimValue, {
-          toValue: 0,
-          duration: TENT_IMAGE_ANIM_DURATION,
-          useNativeDriver: true
-        }).start();
-      } else if (this.props.status === "SIGNED_AS_EMPTY") {
-        Animated.timing(this.backgroundAnimValue, {
-          toValue: 1,
-          duration: BACKGROUND_ANIM_DURATION,
-          useNativeDriver: true
-        }).start();
-      } else if (this.props.status === "SIGNED_AS_TENT") {
-        Animated.timing(this.tentImageAnimValue, {
-          toValue: 1,
-          duration: TENT_IMAGE_ANIM_DURATION,
-          useNativeDriver: true
-        }).start();
-      }
+      this.animateTile();
     }
+
     if (!prevProps.isBoardSolved && this.props.isBoardSolved) {
       Animated.timing(this.solvedAnimValue, {
         toValue: 1,
@@ -85,6 +65,38 @@ class Tile extends React.Component<Props> {
       }).start();
     }
   }
+
+  animateTile = () => {
+    if (this.props.status === "UNSIGNED") {
+      Animated.timing(this.backgroundAnimValue, {
+        toValue: 0,
+        duration: BACKGROUND_ANIM_DURATION,
+        useNativeDriver: true
+      }).start();
+      Animated.timing(this.tentImageAnimValue, {
+        toValue: 0,
+        duration: TENT_IMAGE_ANIM_DURATION,
+        useNativeDriver: true
+      }).start();
+    } else if (this.props.status === "SIGNED_AS_EMPTY") {
+      Animated.timing(this.backgroundAnimValue, {
+        toValue: 1,
+        duration: BACKGROUND_ANIM_DURATION,
+        useNativeDriver: true
+      }).start();
+    } else if (this.props.status === "SIGNED_AS_TENT") {
+      Animated.timing(this.backgroundAnimValue, {
+        toValue: 1,
+        duration: BACKGROUND_ANIM_DURATION,
+        useNativeDriver: true
+      }).start();
+      Animated.timing(this.tentImageAnimValue, {
+        toValue: 1,
+        duration: TENT_IMAGE_ANIM_DURATION,
+        useNativeDriver: true
+      }).start();
+    }
+  };
 
   render() {
     const { status, onPress, width, height, isBoardSolved } = this.props;
