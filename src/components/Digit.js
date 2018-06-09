@@ -10,7 +10,7 @@ const SPAWN_ANIM_DELAY = 200;
 type Props = {
   width: number,
   height: number,
-  numberOfTents: ?number,
+  tentsCounter: ?number,
   isValid: ?boolean,
   isFilled: ?boolean,
   isVisible: ?boolean
@@ -22,7 +22,7 @@ type State = {
 
 class Digit extends React.Component<Props, State> {
   static defaultProps = {
-    numberOfTents: null,
+    tentsCounter: null,
     isValid: true,
     isFilled: false,
     isVisible: false
@@ -58,7 +58,7 @@ class Digit extends React.Component<Props, State> {
     const {
       width,
       height,
-      numberOfTents,
+      tentsCounter,
       isValid,
       isFilled,
       isVisible
@@ -78,8 +78,8 @@ class Digit extends React.Component<Props, State> {
       >
         {isVisible && (
           <Text style={[styles.text, { color }]}>
-            {numberOfTents !== null && numberOfTents !== undefined
-              ? numberOfTents
+            {tentsCounter !== null && tentsCounter !== undefined
+              ? tentsCounter
               : ""}
           </Text>
         )}

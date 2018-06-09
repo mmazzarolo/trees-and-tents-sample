@@ -1,9 +1,9 @@
 /* @flow */
 export type BoardDigit = {|
-  numberOfTents: number,
-  numberOfSignedAsTents: number,
-  numberOfSignedAsEmpty: number,
-  numberOfTrees: number,
+  tentsCounter: number,
+  signedAsTentsCounter: number,
+  signedAsEmptyCounter: number,
+  treesCounter: number,
   isValid: boolean,
   isFilled: boolean,
   isVisible: boolean

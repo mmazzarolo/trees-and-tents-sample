@@ -7,15 +7,15 @@ import type { BoardDigit } from "../types/BoardDigit";
 import type { BoardTileStatus } from "../types/BoardTileStatus";
 
 const updateDigitValidity = (digit: BoardDigit, boardSize: number) => {
-  const numberOfEmpty = boardSize - (digit.numberOfTents + digit.numberOfTrees);
+  const numberOfEmpty = boardSize - (digit.tentsCounter + digit.treesCounter);
   return {
     ...digit,
     isValid:
-      digit.numberOfSignedAsTents <= digit.numberOfTents &&
-      digit.numberOfSignedAsEmpty <= numberOfEmpty,
+      digit.signedAsTentsCounter <= digit.tentsCounter &&
+      digit.signedAsEmptyCounter <= numberOfEmpty,
     isFilled:
-      digit.numberOfSignedAsTents === digit.numberOfTents &&
-      digit.numberOfSignedAsEmpty === numberOfEmpty
+      digit.signedAsTentsCounter === digit.tentsCounter &&
+      digit.signedAsEmptyCounter === numberOfEmpty
   };
 };
 
@@ -34,18 +34,18 @@ const updateBoard = (
   const updatedDigitRow = updatedBoard.tiles[updatedTileId].row;
   const updatedDigitCol = updatedBoard.tiles[updatedTileId].col;
   if (previousTileStatus === "SIGNED_AS_TENT") {
-    updatedBoard.digitsX[updatedDigitRow].numberOfSignedAsTents--;
-    updatedBoard.digitsY[updatedDigitCol].numberOfSignedAsTents--;
+    updatedBoard.digitsX[updatedDigitRow].signedAsTentsCounter--;
+    updatedBoard.digitsY[updatedDigitCol].signedAsTentsCounter--;
   } else if (previousTileStatus === "SIGNED_AS_EMPTY") {
-    updatedBoard.digitsX[updatedDigitRow].numberOfSignedAsEmpty--;
-    updatedBoard.digitsY[updatedDigitCol].numberOfSignedAsEmpty--;
+    updatedBoard.digitsX[updatedDigitRow].signedAsEmptyCounter--;
+    updatedBoard.digitsY[updatedDigitCol].signedAsEmptyCounter--;
   }
   if (updatedTileStatus === "SIGNED_AS_TENT") {
-    updatedBoard.digitsX[updatedDigitRow].numberOfSignedAsTents++;
-    updatedBoard.digitsY[updatedDigitCol].numberOfSignedAsTents++;
+    updatedBoard.digitsX[updatedDigitRow].signedAsTentsCounter++;
+    updatedBoard.digitsY[updatedDigitCol].signedAsTentsCounter++;
   } else if (updatedTileStatus === "SIGNED_AS_EMPTY") {
-    updatedBoard.digitsX[updatedDigitRow].numberOfSignedAsEmpty++;
-    updatedBoard.digitsY[updatedDigitCol].numberOfSignedAsEmpty++;
+    updatedBoard.digitsX[updatedDigitRow].signedAsEmptyCounter++;
+    updatedBoard.digitsY[updatedDigitCol].signedAsEmptyCounter++;
   }
   updatedBoard.digitsX[updatedDigitRow] = updateDigitValidity(
     updatedBoard.digitsX[updatedDigitRow],

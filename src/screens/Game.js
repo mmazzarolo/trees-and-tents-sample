@@ -15,6 +15,8 @@ import chunk from "lodash/chunk";
 import Tile from "../components/Tile";
 import Digit from "../components/Digit";
 import Button from "../components/Button";
+import Timer from "../components/Timer";
+import TentsCounter from "../components/TentsCounter";
 import * as routerActions from "../actions/routerActions";
 import * as gameActions from "../actions/gameActions";
 import * as boardActions from "../actions/boardActions";
@@ -219,7 +221,7 @@ class Game extends React.Component<Props> {
           key={`digit_x_${index}`}
           height={tileSize}
           width={metrics.DIGIT_SIZE}
-          numberOfTents={digit.numberOfTents}
+          tentsCounter={digit.tentsCounter}
           isValid={digit.isValid}
           isFilled={digit.isFilled}
           isVisible={digit.isVisible}
@@ -234,7 +236,7 @@ class Game extends React.Component<Props> {
           key={`digit_y_${index}`}
           width={tileSize}
           height={metrics.DIGIT_SIZE}
-          numberOfTents={digit.numberOfTents}
+          tentsCounter={digit.tentsCounter}
           isValid={digit.isValid}
           isFilled={digit.isFilled}
           isVisible={digit.isVisible}
@@ -255,7 +257,10 @@ class Game extends React.Component<Props> {
         style={[styles.container, { opacity: this.boardAnimValue }]}
         {...this.boardPanResponder.panHandlers}
       >
-        <View style={styles.header} />
+        <View style={styles.header}>
+          <TentsCounter isVisible={true} counter={3} />
+          <Timer isVisible={true} counter={3} />
+        </View>
         <Animated.View style={styles.board}>
           {boardCells.map((row, rowIndex) => {
             return (

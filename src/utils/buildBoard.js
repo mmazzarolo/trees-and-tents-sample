@@ -6,10 +6,10 @@ const TREE_SYMBOL = "#";
 const TENT_SYMBOL = "*";
 
 const initialDigitState = {
-  numberOfTents: 0,
-  numberOfTrees: 0,
-  numberOfSignedAsTents: 0,
-  numberOfSignedAsEmpty: 0,
+  tentsCounter: 0,
+  treesCounter: 0,
+  signedAsTentsCounter: 0,
+  signedAsEmptyCounter: 0,
   isValid: true,
   isFilled: false,
   isVisible: false
@@ -41,11 +41,11 @@ const buildBoard = (puzzle: Puzzle): Board => {
     const tile = { id, value, row, col, status, isValid };
     tiles[index] = tile;
     if (tile.value === "TENT") {
-      digitsX[row].numberOfTents++;
-      digitsY[col].numberOfTents++;
+      digitsX[row].tentsCounter++;
+      digitsY[col].tentsCounter++;
     } else if (tile.value === "TREE") {
-      digitsX[row].numberOfTrees++;
-      digitsY[col].numberOfTrees++;
+      digitsX[row].treesCounter++;
+      digitsY[col].treesCounter++;
     }
   });
   return {
