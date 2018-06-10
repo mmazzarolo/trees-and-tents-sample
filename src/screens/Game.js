@@ -255,12 +255,11 @@ class Game extends React.Component<Props> {
     return (
       <Animated.View
         style={[styles.container, { opacity: this.boardAnimValue }]}
-        {...this.boardPanResponder.panHandlers}
       >
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <TentsCounter isVisible={true} counter={3} />
           <Timer isVisible={true} counter={3} />
-        </View>
+        </View> */}
         <Animated.View style={styles.board}>
           {boardCells.map((row, rowIndex) => {
             return (
@@ -280,7 +279,7 @@ class Game extends React.Component<Props> {
             leftElement={
               <Image source={arrowLeftImage} style={styles.buttonImage} />
             }
-            height={30}
+            height={36}
           />
         </View>
       </Animated.View>
@@ -288,11 +287,14 @@ class Game extends React.Component<Props> {
   }
 }
 
+// {...this.boardPanResponder.panHandlers}
+
 const styles = StyleSheet.create({
   container: {
     height: "100%",
     justifyContent: "center",
     alignItems: "center"
+    // backgroundColor: "#F5F5F5"
   },
   board: {
     marginLeft: metrics.DIGIT_SIZE / 2,

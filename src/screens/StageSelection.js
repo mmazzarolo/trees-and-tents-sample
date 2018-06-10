@@ -58,13 +58,13 @@ class StageSelection extends React.Component<Props> {
   renderButton = (
     difficulty: PuzzleDifficulty,
     size: PuzzleSize,
-    backgroundColors: string[]
+    backgroundColor: string[]
   ) => {
     return (
       <Button
         onPress={() => this.handleButtonPress(difficulty, size)}
         label={size}
-        backgroundColors={backgroundColors}
+        backgroundColor={backgroundColor}
         style={styles.button}
         textStyle={styles.buttonText}
         rightElement={
@@ -93,7 +93,7 @@ class StageSelection extends React.Component<Props> {
           <Button
             onPress={this.handleBackButtonPress}
             label={"Back"}
-            backgroundColors={["#808080", "#808080"]}
+            backgroundColor={["#808080", "#808080"]}
             style={styles.headerButton}
             textStyle={styles.headerButtonText}
             leftElement={
@@ -155,7 +155,9 @@ const styles = StyleSheet.create({
     color: "gray",
     fontSize: 20
   },
-  button: {},
+  button: {
+    marginTop: 4
+  },
   buttonText: {
     fontSize: 26
   },

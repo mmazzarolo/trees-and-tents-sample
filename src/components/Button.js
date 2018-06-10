@@ -1,158 +1,77 @@
 /* @flow */
 import * as React from "react";
-import {
-  LayoutAnimation,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View
-} from "react-native";
-import { LinearGradient } from "expo";
+import { StyleSheet, View } from "react-native";
 import Text from "../components/Text";
-import getDifferentLuminance from "../utils/getDifferentLuminance";
 import colors from "../config/colors";
+import ElevatedView from "./ElevatedView";
 
 import type { ReactNativeViewStyle } from "../types/ReactNativeViewStyle";
 import type { ReactNativeTextStyle } from "../types/ReactNativeTextStyle";
 
-const LAYOUT_ANIM_DURATION = 40;
-const CUSTOM_LAYOUT_ANIMATION = {
-  duration: LAYOUT_ANIM_DURATION,
-  create: {
-    type: LayoutAnimation.Types.linear,
-    property: LayoutAnimation.Properties.opacity
-  },
-  update: {
-    type: LayoutAnimation.Types.linear,
-    property: LayoutAnimation.Properties.opacity
-  },
-  delete: {
-    type: LayoutAnimation.Types.linear,
-    property: LayoutAnimation.Properties.opacity
-  }
-};
-
 type Props = {
-  onPress: any => mixed,
   label: string,
   leftElement?: React.Node,
   rightElement?: React.Node,
-  backgroundColors: string[],
-  height: number,
-  shadowHeight: number,
+  onPress: any => mixed,
   style?: ReactNativeViewStyle,
-  textStyle?: ReactNativeTextStyle
+  textStyle?: ReactNativeTextStyle,
+  backgroundColor: string | string[],
+  height: number,
+  elevation: number,
+  borderRadius: number,
+  borderWidth: number
 };
 
-type State = {
-  isTouched: boolean
-};
-
-export default class extends React.PureComponent<Props, State> {
+export default class extends React.PureComponent<Props> {
   static defaultProps = {
-    backgroundColors: [colors.PUERTO_RICO, colors.DULL_CYAN],
+    backgroundColor: [colors.PUERTO_RICO, colors.DULL_CYAN],
     height: 40,
-    shadowHeight: 6
-  };
-
-  state = {
-    isTouched: false
-  };
-
-  get darkerBackgroundColors() {
-    return this.props.backgroundColors.map(x => getDifferentLuminance(x, -0.2));
-  }
-
-  handlePressIn = () => {
-    LayoutAnimation.configureNext(CUSTOM_LAYOUT_ANIMATION);
-    this.setState({ isTouched: true });
-  };
-
-  handlePressOut = () => {
-    LayoutAnimation.configureNext(CUSTOM_LAYOUT_ANIMATION);
-    this.setState({ isTouched: false });
-    this.props.onPress();
+    elevation: 6,
+    borderRadius: 4,
+    borderWidth: 0
   };
 
   render() {
     const {
       label,
-      backgroundColors,
-      height,
       leftElement,
       rightElement,
-      shadowHeight,
       style,
-      textStyle
+      textStyle,
+      ...otherProps
     } = this.props;
 
-    const surfaceMarginTop = this.state.isTouched ? shadowHeight : 2;
-    const borderColor = getDifferentLuminance(backgroundColors[0], -0.3);
+    const hasElement = leftElement !== undefined || rightElement !== undefined;
 
     return (
-      <TouchableWithoutFeedback
-        onPressIn={this.handlePressIn}
-        onPressOut={this.handlePressOut}
-        delayPressIn={0}
-      >
-        <View
-          style={[styles.container, style, { height: height + shadowHeight }]}
-        >
-          <LinearGradient
+      <View style={[styles.container, style]}>
+        <ElevatedView {...otherProps}>
+          <View
             style={[
-              styles.surface,
-              {
-                justifyContent:
-                  leftElement || rightElement ? "space-between" : "center",
-                marginTop: surfaceMarginTop,
-                borderColor,
-                height
-              }
+              styles.content,
+              { justifyContent: hasElement ? "space-between" : "center" }
             ]}
-            colors={backgroundColors}
-            start={[0, 0]}
-            end={[1, 0]}
           >
             {leftElement}
             <Text style={[styles.text, textStyle]}>{label}</Text>
             {rightElement}
-          </LinearGradient>
-          <LinearGradient
-            style={[
-              styles.shadow,
-              { borderColor, height, marginTop: shadowHeight }
-            ]}
-            colors={this.darkerBackgroundColors}
-            start={[0, 0]}
-            end={[1, 0]}
-          />
-        </View>
-      </TouchableWithoutFeedback>
+          </View>
+        </ElevatedView>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    borderRadius: 4
+    width: "100%"
   },
-  surface: {
+  content: {
     width: "100%",
-    borderRadius: 4,
+    height: "100%",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 10,
-    overflow: "hidden",
-    borderWidth: StyleSheet.hairlineWidth,
-    zIndex: 2
-  },
-  shadow: {
-    width: "100%",
-    position: "absolute",
-    borderRadius: 4,
-    overflow: "hidden",
-    borderWidth: StyleSheet.hairlineWidth,
-    zIndex: 1
+    paddingHorizontal: 10
   },
   text: {
     fontSize: 26,

@@ -1,24 +1,13 @@
 /* @flow */
 import * as React from "react";
-import {
-  Animated,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 import colors from "../config/colors";
-import device from "../config/device";
 import tentImage from "../assets/images/tent.png";
 import treeImage from "../assets/images/tree.png";
+import ElevatedView from "./ElevatedView";
 
 import type { BoardTileStatus } from "../types/BoardTileStatus";
 
-const Touchable = device.IS_ANDROID
-  ? TouchableWithoutFeedback
-  : TouchableOpacity;
-
-const BACKGROUND_ANIM_DURATION = 200;
 const TENT_IMAGE_ANIM_DURATION = 200;
 const SOLVED_ANIM_DURATION = 1500;
 
@@ -33,12 +22,17 @@ type Props = {
 };
 
 class Tile extends React.Component<Props> {
-  backgroundAnimValue: Animated.Value = new Animated.Value(0);
   tentImageAnimValue: Animated.Value = new Animated.Value(0);
   solvedAnimValue: Animated.Value = new Animated.Value(0);
 
   componentDidMount() {
-    this.animateTile();
+    if (this.props.status === "SIGNED_AS_TENT") {
+      Animated.timing(this.tentImageAnimValue, {
+        toValue: 1,
+        duration: TENT_IMAGE_ANIM_DURATION,
+        useNativeDriver: true
+      }).start();
+    }
   }
 
   shouldComponentUpdate(prevProps: Props) {
@@ -53,8 +47,15 @@ class Tile extends React.Component<Props> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (prevProps.status !== this.props.status) {
-      this.animateTile();
+    if (
+      prevProps.status !== "SIGNED_AS_TENT" &&
+      this.props.status === "SIGNED_AS_TENT"
+    ) {
+      Animated.timing(this.tentImageAnimValue, {
+        toValue: 1,
+        duration: TENT_IMAGE_ANIM_DURATION,
+        useNativeDriver: true
+      }).start();
     }
 
     if (!prevProps.isBoardSolved && this.props.isBoardSolved) {
@@ -66,52 +67,20 @@ class Tile extends React.Component<Props> {
     }
   }
 
-  animateTile = () => {
-    if (this.props.status === "UNSIGNED") {
-      Animated.timing(this.backgroundAnimValue, {
-        toValue: 0,
-        duration: BACKGROUND_ANIM_DURATION,
-        useNativeDriver: true
-      }).start();
-      Animated.timing(this.tentImageAnimValue, {
-        toValue: 0,
-        duration: TENT_IMAGE_ANIM_DURATION,
-        useNativeDriver: true
-      }).start();
-    } else if (this.props.status === "SIGNED_AS_EMPTY") {
-      Animated.timing(this.backgroundAnimValue, {
-        toValue: 1,
-        duration: BACKGROUND_ANIM_DURATION,
-        useNativeDriver: true
-      }).start();
-    } else if (this.props.status === "SIGNED_AS_TENT") {
-      Animated.timing(this.backgroundAnimValue, {
-        toValue: 1,
-        duration: BACKGROUND_ANIM_DURATION,
-        useNativeDriver: true
-      }).start();
-      Animated.timing(this.tentImageAnimValue, {
-        toValue: 1,
-        duration: TENT_IMAGE_ANIM_DURATION,
-        useNativeDriver: true
-      }).start();
-    }
-  };
-
   render() {
     const { status, onPress, width, height, isBoardSolved } = this.props;
-    const { backgroundAnimValue, tentImageAnimValue, solvedAnimValue } = this;
-    const imageInTransform = [
+    const { tentImageAnimValue, solvedAnimValue } = this;
+    const imageTransform = [
       {
         scale: isBoardSolved
           ? solvedAnimValue.interpolate({
               inputRange: [0, 0.5, 1],
-              outputRange: [1, 1.5, 1],
+              outputRange: [1, 1.4, 1],
               extrapolate: "clamp"
             })
           : tentImageAnimValue.interpolate({
-              inputRange: [0, 0.75, 1],
-              outputRange: [0.01, 1.2, 1],
+              inputRange: [0, 0.5, 1],
+              outputRange: [0.01, 1.4, 1],
               extrapolate: "clamp"
             })
       },
@@ -122,90 +91,50 @@ class Tile extends React.Component<Props> {
         })
       }
     ];
-    const imageOutTransform = [
-      {
-        scale: tentImageAnimValue.interpolate({
-          inputRange: [0, 0.5, 1],
-          outputRange: [0.01, 0, 1],
-          extrapolate: "clamp"
-        })
-      }
-    ];
 
     let tileContent;
-    let backgroundColor;
-    let borderColor;
-    let backgroundTransform;
-    // ************************************
-    // PRISTINE
-    // ************************************
-    if (status === "PRISTINE") {
-      borderColor = colors.MERCURY;
-      backgroundColor = "white";
-      backgroundTransform = [{ scale: 1 }];
-      // ************************************
-      // TREE
-      // ************************************
-    } else if (status === "TREE") {
+    let backgroundColor = "#fff";
+    if (status === "TREE") {
       backgroundColor = colors.FRINGY_FLOWER;
-      borderColor = colors.SILVER_TREE;
-      backgroundTransform = [{ scale: 1 }];
       tileContent = (
         <Animated.Image source={treeImage} style={[styles.treeImage]} />
       );
-      // ************************************
-      // SIGNED_AS_EMPTY
-      // ************************************
     } else if (status === "SIGNED_AS_EMPTY") {
       backgroundColor = colors.FRINGY_FLOWER_2;
-      borderColor = colors.MANTIS;
-      backgroundTransform = [{ scale: backgroundAnimValue }];
-      // ************************************
-      // SIGNED_AS_TENT
-      // ************************************
     } else if (status === "SIGNED_AS_TENT") {
-      backgroundTransform = [{ scale: backgroundAnimValue }];
       backgroundColor = colors.FRINGY_FLOWER_2;
-      borderColor = colors.MANTIS;
       tileContent = (
         <Animated.Image
           source={tentImage}
-          style={[styles.tentImage, { transform: imageInTransform }]}
+          style={[styles.tentImage, { transform: imageTransform }]}
         />
       );
-      // ************************************
-      // UNSIGNED
-      // ************************************
     } else {
-      tileContent = (
-        <Animated.Image
-          source={tentImage}
-          style={[styles.tentImage, { transform: imageOutTransform }]}
-        />
-      );
-      backgroundColor = colors.FRINGY_FLOWER_2;
-      borderColor = colors.MERCURY;
-      backgroundTransform = [{ scale: backgroundAnimValue }];
     }
+
+    const isFlat = status === "PRISTINE" || status === "UNSIGNED";
     return (
-      <Touchable onPressIn={onPress}>
-        <Animated.View style={[styles.container, { width, height }]}>
-          <View style={styles.content}>
-            <View style={[styles.backgroundContainer, { borderColor }]}>
-              <Animated.View
-                style={[
-                  styles.background,
-                  {
-                    backgroundColor,
-                    transform: backgroundTransform
-                  }
-                ]}
-              />
-            </View>
+      <View
+        style={[
+          styles.container,
+          { borderColor: isFlat ? colors.MERCURY : "transparent" }
+        ]}
+      >
+        <ElevatedView
+          onPress={onPress}
+          backgroundColor={backgroundColor}
+          borderRadius={4}
+          height={height - 4}
+          width={width}
+          borderWidth={isFlat ? 0 : 0}
+          elevation={4}
+          isElevated={!isFlat}
+        >
+          <View style={[styles.content]}>
             {tileContent ? tileContent : null}
           </View>
-        </Animated.View>
-      </Touchable>
+        </ElevatedView>
+      </View>
     );
   }
 }
@@ -214,41 +143,28 @@ export default Tile;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white"
+    borderWidth: 1,
+    backgroundColor: "white",
+    borderRadius: 4,
+    margin: 1
   },
   content: {
     width: "100%",
     height: "100%",
-    borderWidth: 2,
-    borderColor: "white",
     borderRadius: 4,
     alignItems: "center",
     justifyContent: "center",
-    overflow: "hidden"
-  },
-  backgroundContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
     overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderRadius: 4
-  },
-  background: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 3
+    zIndex: 2
   },
   treeImage: {
-    width: "70%",
-    height: "70%"
+    resizeMode: "contain",
+    width: "80%",
+    height: "80%"
   },
   tentImage: {
-    width: "70%",
-    height: "70%"
+    resizeMode: "contain",
+    width: "80%",
+    height: "80%"
   }
 });
