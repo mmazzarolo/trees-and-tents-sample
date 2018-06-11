@@ -2,8 +2,9 @@
 import buildBoard from "../utils/buildBoard";
 import updateBoard from "../utils/updateBoard";
 
-import type { ReduxAction } from "../types/ReduxAction";
 import type { Board } from "../types/Board";
+import type { ReduxAction } from "../types/ReduxAction";
+import type { ReduxState } from "../types/ReduxState";
 
 // ===========================
 //   STATE TYPE
@@ -50,3 +51,8 @@ export default (
 // ===========================
 //   SELECTORS
 // ===========================
+export const getTentsCounter = (state: ReduxState) => {
+  return state.board.tiles.reduce((counter, tile) => {
+    return counter + (tile.value === "TENT" ? 1 : 0);
+  }, 0);
+};

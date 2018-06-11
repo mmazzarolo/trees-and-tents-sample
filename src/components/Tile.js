@@ -5,6 +5,7 @@ import colors from "../config/colors";
 import tentImage from "../assets/images/tent.png";
 import treeImage from "../assets/images/tree.png";
 import ElevatedView from "./ElevatedView";
+import metrics from "../config/metrics";
 
 import type { BoardTileStatus } from "../types/BoardTileStatus";
 
@@ -154,15 +155,16 @@ export default Tile;
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
+    borderWidth: metrics.TILE_BORDER_WIDTH,
     backgroundColor: "white",
-    borderRadius: 4,
-    margin: 1
+    borderRadius: metrics.TILE_BORDER_RADIUS,
+    marginTop: metrics.TILE_MARGIN,
+    marginLeft: metrics.TILE_MARGIN
   },
   content: {
     width: "100%",
     height: "100%",
-    borderRadius: 4,
+    borderRadius: metrics.TILE_BORDER_RADIUS,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",

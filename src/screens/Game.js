@@ -12,6 +12,7 @@ import {
 import NativeMethodsMixin from "NativeMethodsMixin";
 import { connect } from "react-redux";
 import chunk from "lodash/chunk";
+import { getTentsCounter } from "../reducers/boardReducer";
 import Tile from "../components/Tile";
 import Digit from "../components/Digit";
 import Button from "../components/Button";
@@ -43,6 +44,7 @@ type Props = {
   digitsX: BoardDigit[],
   digitsY: BoardDigit[],
   isSolved: boolean,
+  tentsCounter: number,
   updateTileStatus: typeof boardActions.updateTileStatus,
   pauseCurrentGame: typeof gameActions.pauseCurrentGame,
   goToMenuScreen: typeof routerActions.goToMenuScreen,
@@ -55,7 +57,8 @@ const mapStateToProps = (state: ReduxState) => ({
   size: state.board.size,
   digitsX: state.board.digitsX,
   digitsY: state.board.digitsY,
-  isSolved: state.board.isSolved
+  isSolved: state.board.isSolved,
+  tentsCounter: getTentsCounter(state)
 });
 
 const mapDispatchToProps = {
@@ -224,6 +227,8 @@ class Game extends React.Component<Props> {
     const tilesByRows = chunk(tiles, size);
 
     const tileSize = getTileSize(size);
+    const tileSizePlusPadding =
+      tileSize + metrics.TILE_BORDER_WIDTH * 2 + metrics.TILE_MARGIN;
 
     // Map tiles to React elements (Tile)
     const boardCells = tilesByRows.map((row, rowIndex) => {
@@ -255,7 +260,7 @@ class Game extends React.Component<Props> {
       row.push(
         <Digit
           key={`digit_x_${index}`}
-          height={tileSize}
+          height={tileSizePlusPadding}
           width={metrics.DIGIT_SIZE}
           tentsCounter={digit.tentsCounter}
           isValid={digit.isValid}
@@ -270,7 +275,7 @@ class Game extends React.Component<Props> {
       return (
         <Digit
           key={`digit_y_${index}`}
-          width={tileSize}
+          width={tileSizePlusPadding}
           height={metrics.DIGIT_SIZE}
           tentsCounter={digit.tentsCounter}
           isValid={digit.isValid}
@@ -291,12 +296,11 @@ class Game extends React.Component<Props> {
     return (
       <Animated.View
         style={[styles.container, { opacity: this.boardAnimValue }]}
-        {...this.boardPanResponder.panHandlers}
       >
-        {/* <View style={styles.header}>
+        <View style={styles.header}>
           <TentsCounter isVisible={true} counter={3} />
-          <Timer isVisible={true} counter={3} />
-        </View> */}
+          {/* <Timer isVisible={true} counter={3} /> */}
+        </View>
         <Animated.View style={styles.board}>
           {boardCells.map((row, rowIndex) => {
             return (
@@ -312,7 +316,7 @@ class Game extends React.Component<Props> {
             textStyle={styles.buttonText}
             onPress={this.handleBackButtonPress}
             label={"Back"}
-            backgroundColors={["#808080", "#808080"]}
+            backgroundColor={"#808080"}
             leftElement={
               <Image source={arrowLeftImage} style={styles.buttonImage} />
             }
@@ -332,8 +336,8 @@ const styles = StyleSheet.create({
     // backgroundColor: "#F5F5F5"
   },
   board: {
-    marginLeft: metrics.DIGIT_SIZE / 2,
-    marginTop: metrics.DIGIT_SIZE / 2
+    marginLeft: metrics.DIGIT_SIZE,
+    marginTop: metrics.DIGIT_SIZE
   },
   boardRow: {
     flexDirection: "row"
@@ -345,10 +349,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
     flexDirection: "row",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 30,
-    marginHorizontal: 30
+    marginVertical: 30
+    // marginHorizontal: 30
   },
   footer: {
     position: "absolute",
