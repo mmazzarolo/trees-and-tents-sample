@@ -106,15 +106,52 @@ class Game extends React.Component<Props> {
     });
   };
 
+  findTileByCoord = (x: number, y: number): ?BoardTile => {
+    let tile = null;
+    this.tilesBoundigClientRects.some((boundingClientRect, index) => {
+      if (!boundingClientRect) return false;
+      const point = { x, y };
+      const isPointerInTile = isPointInBoundingRect(point, boundingClientRect);
+      if (isPointerInTile) {
+        tile = this.props.tiles[index];
+        return true;
+      }
+      return false;
+    });
+    return tile;
+  };
+
   boardPanResponder = PanResponder.create({
+    onStartShouldSetPanResponderCapture: (evt, gestureState) => {
+      const tile = this.findTileByCoord(
+        evt.nativeEvent.pageX,
+        evt.nativeEvent.pageY
+      );
+      if (tile && ["PRISTINE", "UNSIGNED"].includes(tile.status)) {
+        return true;
+      }
+      return false;
+    },
     onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
-      return true;
+      const tile = this.findTileByCoord(gestureState.moveX, gestureState.moveY);
+      if (tile && ["PRISTINE", "UNSIGNED"].includes(tile.status)) {
+        return true;
+      }
+      return false;
     },
 
     onPanResponderMove: (evt, gestureState) => {
       this.handleTouchMove(gestureState.moveX, gestureState.moveY);
     },
     onPanResponderRelease: (evg, gestureState) => {
+      if (
+        this.firstHoveredTile &&
+        this.lastHoveredTile &&
+        this.firstHoveredTile.id === this.lastHoveredTile.id
+      ) {
+        const tileRef = this.tilesRefs[this.firstHoveredTile.id];
+        tileRef.simulatePress();
+      }
       this.firstHoveredTile = null;
       this.lastHoveredTile = null;
       this.isHovering = false;
@@ -135,26 +172,25 @@ class Game extends React.Component<Props> {
         return;
       }
     }
-    this.tilesBoundigClientRects.some((boundingClientRect, index) => {
-      if (!boundingClientRect) return false;
-      const isPointerInTile = isPointInBoundingRect(point, boundingClientRect);
-      if (isPointerInTile) {
-        const hoveredTile = this.props.tiles[index];
-        this.lastHoveredTile = hoveredTile;
-        if (!this.isHovering) {
-          this.isHovering = true;
-          this.firstHoveredTile = hoveredTile;
-        } else if (hoveredTile !== this.firstHoveredTile) {
-          if (this.firstHoveredTile) {
-            this.handleTilePointerEnter(this.firstHoveredTile);
-          }
-          this.firstHoveredTile = null;
-          this.handleTilePointerEnter(hoveredTile);
+    const hoveredTile = this.findTileByCoord(x, y);
+    if (hoveredTile) {
+      this.lastHoveredTile = hoveredTile;
+      if (!this.isHovering) {
+        this.isHovering = true;
+        this.firstHoveredTile = hoveredTile;
+      } else if (
+        hoveredTile !== this.firstHoveredTile &&
+        ["PRISTINE", "UNSIGNED"].includes(hoveredTile.status)
+      ) {
+        if (this.firstHoveredTile) {
+          const firstHoveredTileRef = this.tilesRefs[this.firstHoveredTile.id];
+          firstHoveredTileRef.simulatePress();
         }
-        return true;
+        this.firstHoveredTile = null;
+        const hoveredTileRef = this.tilesRefs[hoveredTile.id];
+        hoveredTileRef.simulatePress();
       }
-      return false;
-    });
+    }
   };
 
   handleTilePointerUp = (tile: BoardTile) => {
@@ -255,6 +291,7 @@ class Game extends React.Component<Props> {
     return (
       <Animated.View
         style={[styles.container, { opacity: this.boardAnimValue }]}
+        {...this.boardPanResponder.panHandlers}
       >
         {/* <View style={styles.header}>
           <TentsCounter isVisible={true} counter={3} />
@@ -286,8 +323,6 @@ class Game extends React.Component<Props> {
     );
   }
 }
-
-// {...this.boardPanResponder.panHandlers}
 
 const styles = StyleSheet.create({
   container: {

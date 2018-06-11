@@ -24,6 +24,7 @@ type Props = {
 class Tile extends React.Component<Props> {
   tentImageAnimValue: Animated.Value = new Animated.Value(0);
   solvedAnimValue: Animated.Value = new Animated.Value(0);
+  elevatedViewRef: ?ElevatedView = null;
 
   componentDidMount() {
     if (this.props.status === "SIGNED_AS_TENT") {
@@ -66,6 +67,13 @@ class Tile extends React.Component<Props> {
       }).start();
     }
   }
+
+  simulatePress = async () => {
+    this.props.onPress();
+    if (this.elevatedViewRef) {
+      this.elevatedViewRef.simulatePress();
+    }
+  };
 
   render() {
     const { status, onPress, width, height, isBoardSolved } = this.props;
@@ -121,6 +129,9 @@ class Tile extends React.Component<Props> {
         ]}
       >
         <ElevatedView
+          ref={ref => {
+            this.elevatedViewRef = ref;
+          }}
           onPress={onPress}
           backgroundColor={backgroundColor}
           borderRadius={4}

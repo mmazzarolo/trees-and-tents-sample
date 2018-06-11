@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import GradientView from "../components/GradientView";
 import getDifferentLuminance from "../utils/getDifferentLuminance";
+import delay from "../utils/delay";
 
 const LAYOUT_ANIM_DURATION = 40;
 const CUSTOM_LAYOUT_ANIMATION = {
@@ -79,6 +80,13 @@ class ElevatedView extends React.PureComponent<Props, State> {
   };
 
   handlePressOut = () => {
+    LayoutAnimation.configureNext(CUSTOM_LAYOUT_ANIMATION);
+    this.setState({ isTouched: false });
+  };
+
+  simulatePress = async () => {
+    this.setState({ isTouched: true });
+    await delay(10); // TODO: Why does this work?
     LayoutAnimation.configureNext(CUSTOM_LAYOUT_ANIMATION);
     this.setState({ isTouched: false });
   };
