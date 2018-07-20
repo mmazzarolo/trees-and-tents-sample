@@ -7,6 +7,7 @@ import * as gameActions from "../actions/gameActions";
 import arrowRightImage from "../assets/images/arrow-right.png";
 import arrowLeftImage from "../assets/images/arrow-left.png";
 import metrics from "../config/metrics";
+import colors from "../config/colors";
 import Text from "../components/Text";
 import Button from "../components/Button";
 
@@ -93,7 +94,7 @@ class StageSelection extends React.Component<Props> {
           <Button
             onPress={this.handleBackButtonPress}
             label={"Back"}
-            backgroundColor={["#808080", "#808080"]}
+            backgroundColor={[colors.GRAY, colors.GRAY]}
             style={styles.headerButton}
             textStyle={styles.headerButtonText}
             leftElement={
@@ -106,15 +107,27 @@ class StageSelection extends React.Component<Props> {
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>easy</Text>
-          {this.renderButton("easy", "6x6", ["#30c9ad", "#30b9c9"])}
-          {this.renderButton("easy", "8x8", ["#30b9c9", "#5493EA"])}
-          {this.renderButton("easy", "10x10", ["#5493EA", "#4373E7"])}
+          {this.renderButton("easy", "6x6", [colors.SHAMROCK, colors.SCOOTER])}
+          {this.renderButton("easy", "8x8", [
+            colors.SCOOTER,
+            colors.CORNFLOWER_BLUE
+          ])}
+          {this.renderButton("easy", "10x10", [
+            colors.CORNFLOWER_BLUE,
+            colors.ROYAL_BLUE
+          ])}
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>hard</Text>
-          {this.renderButton("hard", "6x6", ["#FFDD75", "#FFBA6D"])}
-          {this.renderButton("hard", "8x8", ["#FFBA6D", "#FE816D"])}
-          {this.renderButton("hard", "10x10", ["#FE816D", "#EC6F86"])}
+          {this.renderButton("hard", "6x6", [
+            colors.KOURNIKOVA,
+            colors.MACARONI_AND_CHEESE
+          ])}
+          {this.renderButton("hard", "8x8", [
+            colors.MACARONI_AND_CHEESE,
+            colors.SALMON
+          ])}
+          {this.renderButton("hard", "10x10", [colors.SALMON, colors.FROLY])}
         </View>
       </Animated.View>
     );
@@ -136,7 +149,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 26,
-    color: "#666666"
+    color: colors.DOVE_GRAY
   },
   headerButton: {
     width: "30%"

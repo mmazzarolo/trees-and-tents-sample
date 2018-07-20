@@ -6,8 +6,6 @@ import * as routerActions from "../actions/routerActions";
 import * as gameActions from "../actions/gameActions";
 import Logo from "../components/Logo";
 import Button from "../components/Button";
-import Text from "../components/Text";
-import ElevatedView from "../components/ElevatedView";
 
 import type { ReduxState } from "../types/ReduxState";
 

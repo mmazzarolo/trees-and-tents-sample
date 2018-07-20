@@ -3,6 +3,7 @@ import * as React from "react";
 import { Animated, View, StyleSheet } from "react-native";
 import times from "lodash/times";
 import Text from "../components/Text";
+import colors from "../config/colors";
 
 const LETTER_ANIM_DURATION_DEFAULT = 100;
 
@@ -78,9 +79,9 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   letter: {
-    color: "white",
+    color: colors.FRINGY_FLOWER_2,
     fontSize: 52,
-    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowColor: colors.TRANSPARENT_DARK_2,
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 1
   }

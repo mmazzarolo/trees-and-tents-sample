@@ -1,27 +1,22 @@
 /* @flow */
 export default {
+  TRANSPARENT_DARK_2: "rgba(0, 0, 0, 0.2)",
+  WHITE: "#FFF",
   FRINGY_FLOWER: "#B4DFC8",
-  SILVER_TREE: "#6BC090",
   FRINGY_FLOWER_2: "#B3E9B4",
-  MANTIS: "#67D36A",
   MERCURY: "#E5E5E5",
-  BRINK_PINK: "#f7637c",
-  TIN: "#7F7F7F",
   PUERTO_RICO: "#30c9ad",
   DULL_CYAN: "#30b9c9",
-  ZIRCON: "#E0E0E0",
-
-  AMAZON: "#39825F",
-  MEDIUM_SEA_GREEN: "#41AC70",
-  STROMBOLI: "#336352",
-  OCEAN_GREEN: "#419C6F",
-  SAN_FELIX: "#306C3B",
-  DULL_LIME: "#37AB3C"
+  BRINK_PINK: "#f7637c",
+  DOVE_GRAY: "#666666",
+  TIN: "#7F7F7F",
+  GRAY: "#808080",
+  SHAMROCK: "#30c9ad",
+  SCOOTER: "#30b9c9",
+  CORNFLOWER_BLUE: "#5493EA",
+  ROYAL_BLUE: "#4373E7",
+  KOURNIKOVA: "#FFDD75",
+  MACARONI_AND_CHEESE: "#FFBA6D",
+  SALMON: "#FE816D",
+  FROLY: "#EC6F86"
 };
-
-// color: #f7637c;  --tile-tree-background-color: rgba(60, 179, 113, 0.4);
-// --tile-tree-border-color: rgba(60, 179, 113, 0.8);
-// --tile-empty-background-color: rgba(50, 205, 50, 0.4);
-// --tile-empty-border-color: rgba(50, 205, 50, 0.8);
-// --tile-tent-background-color: rgba(60, 179, 113, 0.4);
-// --tile-tent-border-color: rgba(60, 179, 113, 0.8);

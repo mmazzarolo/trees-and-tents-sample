@@ -16,8 +16,6 @@ import { getTentsCounter } from "../reducers/boardReducer";
 import Tile from "../components/Tile";
 import Digit from "../components/Digit";
 import Button from "../components/Button";
-import Timer from "../components/Timer";
-import TentsCounter from "../components/TentsCounter";
 import * as routerActions from "../actions/routerActions";
 import * as gameActions from "../actions/gameActions";
 import * as boardActions from "../actions/boardActions";
@@ -27,6 +25,7 @@ import delay from "../utils/delay";
 import device from "../config/device";
 import metrics from "../config/metrics";
 import arrowLeftImage from "../assets/images/arrow-left.png";
+import refreshImage from "../assets/images/refresh.png";
 
 import type { ReduxState } from "../types/ReduxState";
 import type { ReactNativeViewRect } from "../types/ReactNativeViewRect";
@@ -297,10 +296,6 @@ class Game extends React.Component<Props> {
       <Animated.View
         style={[styles.container, { opacity: this.boardAnimValue }]}
       >
-        <View style={styles.header}>
-          <TentsCounter isVisible={true} counter={3} />
-          {/* <Timer isVisible={true} counter={3} /> */}
-        </View>
         <Animated.View style={styles.board}>
           {boardCells.map((row, rowIndex) => {
             return (
@@ -315,12 +310,25 @@ class Game extends React.Component<Props> {
             style={styles.button}
             textStyle={styles.buttonText}
             onPress={this.handleBackButtonPress}
-            label={"Back"}
+            label={"Menu"}
             backgroundColor={"#808080"}
             leftElement={
               <Image source={arrowLeftImage} style={styles.buttonImage} />
             }
             height={36}
+            width={90}
+          />
+          <Button
+            style={[styles.button, { width: 100 }]}
+            textStyle={styles.buttonText}
+            onPress={this.handleBackButtonPress}
+            label={"Restart"}
+            backgroundColor={"#808080"}
+            leftElement={
+              <Image source={refreshImage} style={styles.buttonImage} />
+            }
+            height={36}
+            width={100}
           />
         </View>
       </Animated.View>
@@ -332,8 +340,8 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     justifyContent: "center",
-    alignItems: "center"
-    // backgroundColor: "#F5F5F5"
+    alignItems: "center",
+    paddingBottom: metrics.SCREEN_HEIGHT * 0.15
   },
   board: {
     marginLeft: metrics.DIGIT_SIZE,
@@ -341,18 +349,6 @@ const styles = StyleSheet.create({
   },
   boardRow: {
     flexDirection: "row"
-  },
-  header: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: 50,
-    flexDirection: "row",
-    // justifyContent: "space-between",
-    alignItems: "center",
-    marginVertical: 30
-    // marginHorizontal: 30
   },
   footer: {
     position: "absolute",
@@ -364,7 +360,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginVertical: 30,
-    marginHorizontal: 30
+    paddingHorizontal: 30
   },
   button: {
     width: "24%"

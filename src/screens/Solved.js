@@ -97,7 +97,7 @@ class Solved extends React.Component<Props> {
           >
             <Button
               label="MENU"
-              backgroundColors={["#fff", "#FFF"]}
+              backgroundColors={[colors.WHITE, colors.WHITE]}
               onPress={this.handleMenuButtonPress}
               textStyle={styles.menuButtonTextStyle}
             />
@@ -107,7 +107,7 @@ class Solved extends React.Component<Props> {
           >
             <Button
               label="NEW PUZZLE"
-              backgroundColors={["#fff", "#FFF"]}
+              backgroundColors={[colors.WHITE, colors.WHITE]}
               onPress={this.handleNewPuzzlePress}
               textStyle={styles.menuButtonTextStyle}
             />
@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     width: "100%",
-    backgroundColor: colors.FRINGY_FLOWER_2,
     padding: 20
   },
   title: {
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
   },
   menuButtonTextStyle: {
     fontSize: 18,
-    color: "#A3A7B0"
+    color: colors.WHITE
   }
 });
 

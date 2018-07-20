@@ -102,7 +102,7 @@ class Tile extends React.Component<Props> {
     ];
 
     let tileContent;
-    let backgroundColor = "#fff";
+    let backgroundColor = colors.WHITE;
     if (status === "TREE") {
       backgroundColor = colors.FRINGY_FLOWER;
       tileContent = (

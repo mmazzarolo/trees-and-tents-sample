@@ -1,6 +1,6 @@
 /* @flow */
 import * as React from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, StyleSheet } from "react-native";
 import Text from "../components/Text";
 import colors from "../config/colors";
 
