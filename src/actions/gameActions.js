@@ -1,5 +1,6 @@
 /* @flow */
 import getRandomPuzzle from "../utils/getRandomPuzzle";
+import getPuzzle from "../utils/getPuzzle";
 
 import type { ReduxAction } from "../types/ReduxAction";
 import type { ReduxDispatch } from "../types/ReduxDispatch";
@@ -11,10 +12,10 @@ export const startNewGame = (
   difficulty: PuzzleDifficulty,
   size: PuzzleSize
 ) => {
-  const puzzle = getRandomPuzzle(difficulty, size);
+  const { puzzle, id } = getRandomPuzzle(difficulty, size);
   return {
     type: "START_NEW_GAME",
-    payload: { difficulty, size, puzzle }
+    payload: { difficulty, size, puzzle, id }
   };
 };
 
@@ -32,9 +33,20 @@ export const resumeCurrentGame = (): ReduxAction => {
 export const startNewGameWithCurrentSettings = () => {
   return (dispatch: ReduxDispatch, getState: ReduxGetState) => {
     const { puzzleDifficulty, puzzleSize } = getState().game;
-    const puzzle = getRandomPuzzle(puzzleDifficulty, puzzleSize);
+    const { puzzle, id } = getRandomPuzzle(puzzleDifficulty, puzzleSize);
     dispatch({
       type: "START_NEW_GAME_WITH_CURRENT_SETTINGS",
+      payload: { puzzle, id }
+    });
+  };
+};
+
+export const resetCurrentGame = () => {
+  return (dispatch: ReduxDispatch, getState: ReduxGetState) => {
+    const { puzzleDifficulty, puzzleSize, puzzleId } = getState().game;
+    const puzzle = getPuzzle(puzzleId || 0, puzzleDifficulty, puzzleSize);
+    dispatch({
+      type: "RESET_CURRENT_GAME",
       payload: { puzzle }
     });
   };

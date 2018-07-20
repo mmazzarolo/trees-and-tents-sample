@@ -36,7 +36,8 @@ type Props = {
   elevation: number,
   borderRadius: number,
   borderWidth: number,
-  isElevated?: boolean
+  isElevated?: boolean,
+  disabled?: boolean
 };
 
 type State = {
@@ -46,7 +47,8 @@ type State = {
 class ElevatedView extends React.PureComponent<Props, State> {
   static defaultProps = {
     width: "100%",
-    isElevated: true
+    isElevated: true,
+    disabled: false
   };
 
   state = {
@@ -100,7 +102,8 @@ class ElevatedView extends React.PureComponent<Props, State> {
       elevation,
       onPress,
       borderWidth,
-      borderRadius
+      borderRadius,
+      disabled
     } = this.props;
 
     return (
@@ -109,6 +112,7 @@ class ElevatedView extends React.PureComponent<Props, State> {
         onPressOut={this.handlePressOut}
         onPress={onPress}
         delayPressIn={0}
+        disabled={disabled}
       >
         <View
           style={[

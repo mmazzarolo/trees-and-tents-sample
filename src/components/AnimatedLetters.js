@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   letter: {
-    color: colors.FRINGY_FLOWER_2,
+    color: colors.SHAMROCK,
     fontSize: 52,
     textShadowColor: colors.TRANSPARENT_DARK_2,
     textShadowOffset: { width: 0, height: 1 },

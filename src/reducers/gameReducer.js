@@ -11,7 +11,8 @@ import type { PuzzleSize } from "../types/PuzzleSize";
 export type GameState = {|
   +status: GameStatus,
   +puzzleDifficulty: PuzzleDifficulty,
-  +puzzleSize: PuzzleSize
+  +puzzleSize: PuzzleSize,
+  +puzzleId: ?number
 |};
 
 // ===========================
@@ -20,7 +21,8 @@ export type GameState = {|
 export const initialState: GameState = {
   status: "NEVER_PLAYED",
   puzzleDifficulty: "easy",
-  puzzleSize: "6x6"
+  puzzleSize: "6x6",
+  puzzleId: null
 };
 
 // ===========================
@@ -32,18 +34,21 @@ export default (
 ): GameState => {
   switch (action.type) {
     case "START_NEW_GAME": {
-      const { difficulty, size } = action.payload;
+      const { difficulty, size, id } = action.payload;
       return {
         ...state,
         puzzleDifficulty: difficulty,
         puzzleSize: size,
+        puzzleId: id,
         status: "PLAYING"
       };
     }
     case "START_NEW_GAME_WITH_CURRENT_SETTINGS": {
+      const { id } = action.payload;
       return {
         ...state,
-        status: "PLAYING"
+        status: "PLAYING",
+        puzzleId: id
       };
     }
 

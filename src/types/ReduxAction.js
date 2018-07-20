@@ -16,13 +16,15 @@ export type ReduxAction =
       payload: {
         puzzle: Puzzle,
         difficulty: PuzzleDifficulty,
-        size: PuzzleSize
+        size: PuzzleSize,
+        id: number
       }
     }
   | {
       type: "START_NEW_GAME_WITH_CURRENT_SETTINGS",
-      payload: { puzzle: Puzzle }
+      payload: { puzzle: Puzzle, id: number }
     }
+  | { type: "RESET_CURRENT_GAME", payload: { puzzle: Puzzle } }
   | { type: "PAUSE_CURRENT_GAME" }
   | { type: "RESUME_CURRENT_GAME" }
   | {

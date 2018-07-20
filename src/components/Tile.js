@@ -141,6 +141,7 @@ class Tile extends React.Component<Props> {
           borderWidth={isFlat ? 0 : 0}
           elevation={4}
           isElevated={!isFlat}
+          disabled={isBoardSolved || status === "TREE"}
         >
           <View style={[styles.content]}>
             {tileContent ? tileContent : null}

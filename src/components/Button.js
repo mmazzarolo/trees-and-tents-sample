@@ -24,7 +24,7 @@ type Props = {
 
 export default class extends React.PureComponent<Props> {
   static defaultProps = {
-    backgroundColor: [colors.PUERTO_RICO, colors.DULL_CYAN],
+    backgroundColor: [colors.SHAMROCK, colors.SCOOTER],
     height: 40,
     elevation: 6,
     borderRadius: 4,

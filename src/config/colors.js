@@ -5,8 +5,6 @@ export default {
   FRINGY_FLOWER: "#B4DFC8",
   FRINGY_FLOWER_2: "#B3E9B4",
   MERCURY: "#E5E5E5",
-  PUERTO_RICO: "#30c9ad",
-  DULL_CYAN: "#30b9c9",
   BRINK_PINK: "#f7637c",
   DOVE_GRAY: "#666666",
   TIN: "#7F7F7F",

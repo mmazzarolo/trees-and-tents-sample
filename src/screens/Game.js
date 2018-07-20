@@ -22,9 +22,10 @@ import * as boardActions from "../actions/boardActions";
 import isPointInBoundingRect from "../utils/isPointInBoundingRect";
 import getTileSize from "../utils/getTileSize";
 import delay from "../utils/delay";
+import colors from "../config/colors";
 import device from "../config/device";
 import metrics from "../config/metrics";
-import arrowLeftImage from "../assets/images/arrow-left.png";
+import barsImage from "../assets/images/bars.png";
 import refreshImage from "../assets/images/refresh.png";
 
 import type { ReduxState } from "../types/ReduxState";
@@ -46,6 +47,7 @@ type Props = {
   tentsCounter: number,
   updateTileStatus: typeof boardActions.updateTileStatus,
   pauseCurrentGame: typeof gameActions.pauseCurrentGame,
+  resetCurrentGame: typeof gameActions.resetCurrentGame,
   goToMenuScreen: typeof routerActions.goToMenuScreen,
   goToSolvedScreen: typeof routerActions.goToSolvedScreen
 };
@@ -61,6 +63,7 @@ const mapStateToProps = (state: ReduxState) => ({
 });
 
 const mapDispatchToProps = {
+  resetCurrentGame: gameActions.resetCurrentGame,
   updateTileStatus: boardActions.updateTileStatus,
   pauseCurrentGame: gameActions.pauseCurrentGame,
   goToMenuScreen: routerActions.goToMenuScreen,
@@ -69,6 +72,7 @@ const mapDispatchToProps = {
 
 class Game extends React.Component<Props> {
   boardAnimValue: Animated.Value = new Animated.Value(0);
+  solveAnimValue: Animated.Value = new Animated.Value(0);
   firstHoveredTile: ?BoardTile = null;
   lastHoveredTile: ?BoardTile = null;
   isHovering: boolean = false;
@@ -91,6 +95,11 @@ class Game extends React.Component<Props> {
   componentDidUpdate(prevProps: Props) {
     const hasBeenSolved = !prevProps.isSolved && this.props.isSolved;
     if (hasBeenSolved) {
+      Animated.timing(this.solveAnimValue, {
+        toValue: 1,
+        duration: SOLVED_ANIMATION_DURATION,
+        useNativeDriver: true
+      }).start();
       setTimeout(this.props.goToSolvedScreen, SOLVED_ANIMATION_DURATION);
     }
   }
@@ -222,7 +231,14 @@ class Game extends React.Component<Props> {
   };
 
   render() {
-    const { tiles, size, digitsX, digitsY, isSolved } = this.props;
+    const {
+      tiles,
+      size,
+      digitsX,
+      digitsY,
+      isSolved,
+      resetCurrentGame
+    } = this.props;
     const tilesByRows = chunk(tiles, size);
 
     const tileSize = getTileSize(size);
@@ -292,6 +308,12 @@ class Game extends React.Component<Props> {
     );
     boardCells.push(bottomDigits);
 
+    const footerOpacity = this.solveAnimValue.interpolate({
+      inputRange: [0, 0.3, 1],
+      outputRange: [1, 0, 0],
+      extrapolate: "clamp"
+    });
+
     return (
       <Animated.View
         style={[styles.container, { opacity: this.boardAnimValue }]}
@@ -305,32 +327,30 @@ class Game extends React.Component<Props> {
             );
           })}
         </Animated.View>
-        <View style={styles.footer}>
+        <Animated.View style={[styles.footer, { opacity: footerOpacity }]}>
           <Button
             style={styles.button}
             textStyle={styles.buttonText}
             onPress={this.handleBackButtonPress}
             label={"Menu"}
-            backgroundColor={"#808080"}
+            backgroundColor={colors.GRAY}
             leftElement={
-              <Image source={arrowLeftImage} style={styles.buttonImage} />
+              <Image source={barsImage} style={styles.buttonImage} />
             }
             height={36}
-            width={90}
           />
           <Button
-            style={[styles.button, { width: 100 }]}
+            style={[styles.button]}
             textStyle={styles.buttonText}
-            onPress={this.handleBackButtonPress}
-            label={"Restart"}
-            backgroundColor={"#808080"}
+            onPress={resetCurrentGame}
+            label={"Reset"}
+            backgroundColor={colors.GRAY}
             leftElement={
               <Image source={refreshImage} style={styles.buttonImage} />
             }
             height={36}
-            width={100}
           />
-        </View>
+        </Animated.View>
       </Animated.View>
     );
   }
@@ -363,7 +383,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30
   },
   button: {
-    width: "24%"
+    width: "34%"
   },
   buttonText: {
     fontSize: 16
