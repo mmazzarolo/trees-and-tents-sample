@@ -22,5 +22,9 @@ The rules are simple:
 <img src="https://raw.githubusercontent.com/mmazzarolo/trees-and-tents-sample/master/.github/capture-game.png" width="240"></img>
 </p>
  
+&nbsp;  
+&nbsp;  
 
-
+<p align="center">
+<a href="https://youtu.be/wFMYWh2q1Vk">Preview on YouTube</a> 
+</p>
