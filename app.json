@@ -1,5 +1,14 @@
 {
   "expo": {
-    "sdkVersion": "27.0.0"
+    "name": "Trees and Tents",
+    "slug": "trees-and-tents-sample",
+    "description":
+      "Simple React-Native implementation of the trees and tents puzzle game",
+    "sdkVersion": "27.0.0",
+    "privacy": "public",
+    "platforms": ["ios"],
+    "githubUrl": "https://github.com/mmazzarolo/trees-and-tents-sample",
+    "orientation": "portrait",
+    "icon": "./src/assets/images/tent.png"
   }
 }
